@@ -24,7 +24,8 @@ var FLOOD_MAX    = 20;         // everyone together: max writes per minute
 var MAX_LEN      = 300;        // per field, question gets 4x
 
 var HEADERS = ['접수시각', 'id', '이니셜', '국기코드', '국가', '사이즈',
-               '이메일', '한국계좌', '결제수단', '질문', '유입페이지', '수정횟수'];
+               '이메일', '한국계좌', '결제수단', '질문', '개인정보동의', '동의시각',
+               '유입페이지', '수정횟수'];
 
 function doGet() {
   // No read path on purpose.
@@ -39,6 +40,8 @@ function doPost(e) {
 
     if (body.token !== TOKEN) return json({ ok: false, error: 'bad token' });
     if (body.website) return json({ ok: true });                 // honeypot: swallow silently
+    // Consent is the legal basis for holding these entries: no consent, no row.
+    if (!body.consent) return json({ ok: false, error: 'consent required' });
     var id = clean(body.id);
     if (!id) return json({ ok: false, error: 'missing id' });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(body.email || ''))) {
@@ -63,7 +66,8 @@ function doPost(e) {
         new Date(), id,
         clean(body.initials), clean(body.flag), clean(body.countryName), clean(body.size),
         clean(body.email), clean(body.krBank), clean(body.payMethod),
-        clean(body.question, MAX_LEN * 4), clean(body.page), 0
+        clean(body.question, MAX_LEN * 4), clean(body.consent), clean(body.consentTs),
+        clean(body.page), 0
       ];
 
       var at = findRow(sheet, id);
