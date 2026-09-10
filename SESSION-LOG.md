@@ -7,7 +7,7 @@ Claude Code와 함께 `index.html` / `artifact-source.html`을 수정한 내용�
 
 - 제목 "WEAR HANYANG HOME" 오른쪽, 제목 첫 줄부터 가격 위 구분선까지 세로로 학생 뒷모습 사진을 넣음 (`jacket-back.jpg`).
 - 사진 자리를 확보하려고 제목 크기를 줄이고 히어로 좌우 칸을 같은 너비로 변경.
-- 가격 표시를 `₩60,000 ~ ₩70,000 per jacket` 으로 변경. 두 금액을 같은 크기로, 물결표로 연결. (75,000을 거쳐 최종 70,000)
+- 가격 표시를 `₩60,000 ~ ₩75,000 per jacket` 으로 변경. 두 금액을 같은 크기로, 물결표로 연결. (70,000을 거쳐 최종 75,000)
 - 가격 아래 "MORE PEOPLE JOIN, / LOWER EVERYONE PAYS." 를 큰 디스플레이 서체 두 줄 + 금색 세로선 박스로 강조. 한글 줄은 삭제.
 - "See the price ladder" 버튼 삭제 (가격 사다리 섹션이 없어졌기 때문).
 

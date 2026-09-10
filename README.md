@@ -26,7 +26,7 @@ https://gannabgreat.github.io/hyu-jacket/  (GitHub Pages, `main` 브랜치 루�
 
 ## 페이지 구성
 
-1. 히어로 — 제목, 학생 뒷모습 사진, 가격(₩60,000 ~ ₩70,000), 앞면·뒷면 사진, Detail Info, 소매 자수 예시
+1. 히어로 — 제목, 학생 뒷모습 사진, 가격(₩60,000 ~ ₩75,000), 앞면·뒷면 사진, Detail Info, 소매 자수 예시
 2. Customization — 소매 이니셜(최대 9자) · 국기(같은 국기 8명 이상일 때 제작)
 3. Production — 5주 일정 (9/14까지 가수요조사 → 결제 → 제작 → 수령)
 4. Spec & Sizing — 제조사 사이즈표
