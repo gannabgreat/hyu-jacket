@@ -45,3 +45,17 @@ https://claude.ai/code/artifact/b49de482-cc7d-412f-87fb-2813bf82bdaf
 
 - Join 섹션 오른쪽 연락처 박스의 카카오 오픈채팅 링크, 인스타그램 아이디
 - 문의 이메일은 wpalskdl03@gmail.com 로 들어가 있음
+
+## 신청 자동 전송 (구글 시트)
+
+`apps-script.gs`를 Google Apps Script로 배포하면 신청이 구글 시트에 자동으로 쌓입니다.
+
+1. https://script.google.com 접속 → **새 프로젝트**
+2. 기본 코드를 지우고 `apps-script.gs` 내용을 붙여넣기 → 저장
+3. 오른쪽 위 **배포 → 새 배포** → 유형 **웹 앱**
+   - 실행 계정: **나**
+   - 액세스 권한: **모든 사용자**
+4. **배포** → 권한 승인 → **웹 앱 URL** 복사 (`https://script.google.com/macros/s/…/exec`)
+5. `artifact-source.html`의 `var SHEET_ENDPOINT = "";` 에 그 URL을 넣고 `index.html`을 다시 생성
+
+시트는 첫 신청 때 드라이브에 "HYU Jacket Orders" 이름으로 자동 생성됩니다. 같은 브라우저에서 다시 신청하면 새 줄이 아니라 기존 줄이 갱신됩니다.

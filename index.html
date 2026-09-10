@@ -521,7 +521,7 @@ footer .mark{color:var(--on-navy)}
             <span class="k">Organizer contact</span>
             <span class="slot">카카오 오픈채팅 링크를 여기에 넣으세요</span>
             <span class="slot">@your_instagram</span>
-            <p>Send your copied spec here when the proof round opens in week 1. Questions before that are welcome any time.<br>도안 확정 단계에서 위 연락처로 스펙을 보내주세요.</p>
+            <p>Your entry is sent to us automatically when you press the button. Use these if you have questions or want to change something later.<br>신청은 버튼을 누르면 자동으로 접수됩니다. 문의나 변경은 아래 연락처로.</p>
           </div>
         </div>
       </div>
@@ -715,54 +715,72 @@ footer .mark{color:var(--on-navy)}
     $("joinBtn").textContent = "Update my entry";
   }
 
-  /* ---------- offline fallback wiring ---------- */
-  var status = $("joinStatus");
-  $("joinForm").addEventListener("submit", function(e){ e.preventDefault(); });
+  /* ---------- submit: Google Sheet (Apps Script) + artifact store + local copy ---------- */
+  // Paste the Apps Script "Web app" URL here. Empty = no remote send (browser-only save).
+  var SHEET_ENDPOINT = "";
 
-  function offlineMode(){
-    $("joinForm").addEventListener("submit", function(){
-      var f = readForm(), err = validate(f);
-      if (err) { status.textContent = err; return; }
-      try { localStorage.setItem("hyu-jacket-order", JSON.stringify(f)); } catch (e) {}
-      showReceipt(f);
-      status.textContent = "Saved on this device — send your spec to the organizer.";
-      $("joinBtn").textContent = "Update my entry";
-    });
+  var status = $("joinStatus");
+  var idv = localId();
+
+  function sendToSheet(f){
+    if (!SHEET_ENDPOINT) return Promise.resolve("skipped");
+    var c = byCode[f.country];
+    var payload = {
+      id: idv, ts: new Date().toISOString(),
+      initials: f.initials, country: f.country, countryName: c[2], flag: c[1],
+      size: f.size, email: f.email, krBank: f.bank, payMethod: f.pay, question: f.question,
+      page: location.href
+    };
+    // text/plain keeps it a "simple" request (no CORS preflight), which Apps Script web apps accept.
+    return fetch(SHEET_ENDPOINT, { method: "POST", body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" } })
+      .then(function(r){ return r.text(); })
+      .then(function(t){
+        var j = null;
+        try { j = JSON.parse(t); } catch (e) {}
+        if (j && j.ok === false) throw new Error(j.error || "sheet error");
+        return "sent";
+      });
   }
 
-  /* ---------- live store ---------- */
+  var artifactCol = null;
   var ready = (window.claude && typeof window.claude.use === "function")
-    ? window.claude.use("db")
-    : Promise.resolve(null);
+    ? window.claude.use("db").then(function(db){ if (db) artifactCol = db.collection("signups"); }, function(){})
+    : Promise.resolve();
 
-  ready.then(function(db){
-    if (!db) { offlineMode(); return; }
+  function saveToArtifact(f){
+    if (!artifactCol) return Promise.resolve("skipped");
+    var c = byCode[f.country];
+    return artifactCol.doc(idv).set({ country: f.country, flag: c[1], size: f.size, email: f.email, krBank: f.bank, payMethod: f.pay, question: f.question, ts: Date.now() })
+      .then(function(){ return "sent"; });
+  }
 
-    var col = db.collection("signups");
-    var id = localId();
+  $("joinForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var f = readForm(), err = validate(f);
+    if (err) { status.textContent = err; return; }
+    $("joinBtn").disabled = true;
+    status.textContent = "Sending… 전송 중";
 
-    $("joinForm").addEventListener("submit", function(){
-      var f = readForm(), err = validate(f);
-      if (err) { status.textContent = err; return; }
-      var c = byCode[f.country];
-      $("joinBtn").disabled = true;
-      status.textContent = "Saving…";
-
-      col.doc(id).set({ country: f.country, flag: c[1], size: f.size, email: f.email, krBank: f.bank, payMethod: f.pay, question: f.question, ts: Date.now() })
-        .then(function(){
-          try { localStorage.setItem("hyu-jacket-order", JSON.stringify(f)); } catch (e) {}
-          showReceipt(f);
-          status.textContent = "You're on the list. 신청 완료.";
-          $("joinBtn").textContent = "Update my entry";
-        })
-        .catch(function(err){
-          status.textContent = (err && err.code === "quota_exceeded")
-            ? "This round is full — message the organizer to get on the next one."
-            : "Couldn't save that. Check your connection and try again.";
-        })
-        .then(function(){ $("joinBtn").disabled = false; });
+    ready.then(function(){
+      return Promise.all([
+        sendToSheet(f).then(function(r){ return r; }, function(){ return "failed"; }),
+        saveToArtifact(f).then(function(r){ return r; }, function(){ return "failed"; })
+      ]);
+    }).then(function(res){
+      try { localStorage.setItem("hyu-jacket-order", JSON.stringify(f)); } catch (e) {}
+      showReceipt(f);
+      var anySent = res.indexOf("sent") !== -1, anyFailed = res.indexOf("failed") !== -1;
+      if (anySent) {
+        status.textContent = "Received — we'll email you at " + f.email + ". 신청 완료, 이메일로 안내드릴게요.";
+      } else if (anyFailed) {
+        status.textContent = "Couldn't send. Check your connection and try again, or email your spec to wpalskdl03@gmail.com.";
+      } else {
+        status.textContent = "Saved on this device — copy your spec and email it to wpalskdl03@gmail.com.";
+      }
+      $("joinBtn").textContent = "Update my entry";
+      $("joinBtn").disabled = false;
     });
-  }, function(){ offlineMode(); });
+  });
 })();
 </script>
 </body>
