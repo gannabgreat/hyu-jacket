@@ -291,13 +291,11 @@ footer .mark{color:var(--on-navy)}
 .notice-pill{font-family:var(--f-mono);font-size:clamp(.78rem,1.1vw,.95rem);font-weight:700;letter-spacing:.14em;text-transform:uppercase;
   background:var(--navy-deep);color:var(--chain-bright);padding:.4rem .8rem;border-radius:999px;white-space:nowrap;
   animation:noticePulse 2.2s ease-in-out infinite}
-.notice-ko{font-weight:600;font-size:clamp(.95rem,1.5vw,1.15rem);opacity:.8}
 .notice-cta{font-family:var(--f-mono);font-size:clamp(.85rem,1.2vw,1.05rem);font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   white-space:nowrap;background:var(--navy-deep);color:#fff;padding:.55rem 1.1rem;border-radius:999px}
 @keyframes noticePulse{0%,100%{opacity:1}50%{opacity:.45}}
 @media (prefers-reduced-motion:reduce){.notice-pill{animation:none}}
-@media (max-width:640px){.notice-bar{font-size:1.15rem;padding:.9rem 1rem;gap:.5rem;text-align:center}
-  .notice-ko{font-size:.95rem;flex-basis:100%}}
+@media (max-width:640px){.notice-bar{font-size:1.15rem;padding:.9rem 1rem;gap:.5rem;text-align:center}}
 .consent{display:flex;gap:.6rem;align-items:flex-start;margin:.2rem 0 .9rem}
 .consent input{margin-top:.25rem;width:1.05rem;height:1.05rem;flex:0 0 auto;accent-color:#8b6b2e}
 .consent label{font-size:.92rem;line-height:1.45}
@@ -342,7 +340,6 @@ footer .mark{color:var(--on-navy)}
 <a class="notice-bar" href="#join">
   <span class="notice-pill">Now open</span>
   <span class="notice-text">Demand survey &mdash; the more people join, the lower the price for everyone.</span>
-  <span class="notice-ko">수요조사 진행 중 &middot; 인원이 많을수록 가격이 내려갑니다</span>
   <span class="notice-cta">Join &rarr;</span>
 </a>
 <div class="rib-rule"></div>
