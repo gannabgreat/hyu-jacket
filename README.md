@@ -13,6 +13,10 @@
 
 두 HTML의 내용은 같습니다. `index.html`은 `artifact-source.html`에 doctype·charset·viewport·기본 리셋만 씌운 것입니다.
 
+## 공개 주소
+
+https://gannabgreat.github.io/hyu-jacket/  (GitHub Pages, `main` 브랜치 루트)
+
 ## 로컬에서 보기
 
     cd hyu-jacket
