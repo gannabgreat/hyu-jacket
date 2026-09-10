@@ -288,6 +288,7 @@ footer .mark{color:var(--on-navy)}
 <style>
 /* ---------- language switcher ---------- */
 :root{color-scheme:light}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .btn-share{
   font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;
   padding:14px 22px;border:2px solid var(--ink);background:transparent;color:var(--ink);
@@ -490,6 +491,8 @@ footer .mark{color:var(--on-navy)}
 
       <div class="join-grid">
         <form class="form-card" id="joinForm" novalidate>
+          <!-- honeypot: humans never see it, bots fill everything. A filled value means "drop it". -->
+          <div class="hp" aria-hidden="true"><label>Website<input id="jWebsite" type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
           <div class="field">
             <label for="jInitials">Initials for the sleeve (optional)</label>
             <input id="jInitials" type="text" maxlength="9" placeholder="leave empty for no initials" autocomplete="off">
@@ -752,6 +755,36 @@ footer .mark{color:var(--on-navy)}
   /* ---------- submit: Google Sheet (Apps Script) + artifact store + local copy ---------- */
   // Paste the Apps Script "Web app" URL here. Empty = no remote send (browser-only save).
   var SHEET_ENDPOINT = "";
+  // Not a secret (the page is public) — it only stops drive-by bots that POST to the
+  // endpoint without reading the page. Must match TOKEN in the Apps Script.
+  var SHARED_TOKEN = "hyu-jacket-2026";
+
+  /* ---------- send guard: honeypot + cooldown + duplicate ---------- */
+  var COOLDOWN_MS = 20000;                   // two sends from this browser can't be closer
+  var DUP_WINDOW_MS = 6 * 60 * 60 * 1000;    // an unchanged entry isn't resent within this window
+
+  function fingerprint(f){
+    return [f.country, f.size, f.email, f.bank, f.pay, f.initials, f.question].join("\u0001");
+  }
+  function lastSend(){
+    try { return JSON.parse(localStorage.getItem("hyu-jacket-last-send") || "null"); } catch (e) { return null; }
+  }
+  function markSend(f){
+    try { localStorage.setItem("hyu-jacket-last-send", JSON.stringify({ ts: Date.now(), fp: fingerprint(f) })); } catch (e) {}
+  }
+  function blockReason(f){
+    var last = lastSend();
+    if (!last || !last.ts) return "";
+    var age = Date.now() - last.ts;
+    if (age < 0) return "";
+    if (age < COOLDOWN_MS) {
+      return "You just sent this — give it a few seconds. 방금 보냈어요, 잠시 후 다시 시도해주세요.";
+    }
+    if (last.fp === fingerprint(f) && age < DUP_WINDOW_MS) {
+      return "Already received — nothing changed. 같은 내용으로 이미 접수돼 있어요. 내용을 바꾸면 다시 보낼 수 있어요.";
+    }
+    return "";
+  }
 
   var status = $("joinStatus");
   var idv = localId();
@@ -763,7 +796,7 @@ footer .mark{color:var(--on-navy)}
       id: idv, ts: new Date().toISOString(),
       initials: f.initials, country: f.country, countryName: c[2], flag: c[1],
       size: f.size, email: f.email, krBank: f.bank, payMethod: f.pay, question: f.question,
-      page: location.href
+      page: location.href, token: SHARED_TOKEN
     };
     // text/plain keeps it a "simple" request (no CORS preflight), which Apps Script web apps accept.
     return fetch(SHEET_ENDPOINT, { method: "POST", body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" } })
@@ -792,6 +825,14 @@ footer .mark{color:var(--on-navy)}
     e.preventDefault();
     var f = readForm(), err = validate(f);
     if (err) { status.textContent = err; return; }
+
+    // Bot filled the hidden field: act successful, send nothing.
+    var hp = $("jWebsite");
+    if (hp && hp.value) { showReceipt(f); status.textContent = "Received. 접수됐어요."; return; }
+
+    var blocked = blockReason(f);
+    if (blocked) { status.textContent = blocked; return; }
+
     $("joinBtn").disabled = true;
     status.textContent = "Sending… 전송 중";
 
@@ -804,6 +845,7 @@ footer .mark{color:var(--on-navy)}
       try { localStorage.setItem("hyu-jacket-order", JSON.stringify(f)); } catch (e) {}
       showReceipt(f);
       var anySent = res.indexOf("sent") !== -1, anyFailed = res.indexOf("failed") !== -1;
+      if (anySent) markSend(f);
       if (anySent) {
         status.textContent = "Received — we'll email you at " + f.email + ". 신청 완료, 이메일로 안내드릴게요.";
       } else if (anyFailed) {
