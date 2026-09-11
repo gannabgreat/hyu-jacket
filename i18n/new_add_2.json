@@ -1,0 +1,66 @@
+{
+  "id": {
+    "A": "Contoh saja — belum final, bisa berubah",
+    "B": "Patch-nya sendiri juga belum final — bentuk, ukuran, dan finishing-nya bisa berubah tergantung pabriknya.",
+    "C": "Sepertinya itu bukan alamat email yang benar. Coba tulis lagi, seperti",
+    "D": "Wajib — tombolnya baru aktif kalau semua ini sudah terisi.",
+    "E": "Email",
+    "F": "Obrolan terbuka KakaoTalk"
+  },
+  "th": {
+    "A": "ตัวอย่างเท่านั้น — ยังไม่สรุป อาจเปลี่ยนได้",
+    "B": "ตัวแพตช์เองก็ยังไม่ใช่ข้อสรุปสุดท้าย — รูปทรง ขนาด และการเก็บงานอาจเปลี่ยนไปตามโรงงานที่ผลิต",
+    "C": "อันนี้ดูไม่ใช่อีเมลที่ถูกต้อง ลองพิมพ์ใหม่อีกครั้ง เช่น",
+    "D": "ต้องกรอก — ปุ่มจะกดได้เมื่อกรอกครบทุกช่องนี้แล้ว",
+    "E": "อีเมล",
+    "F": "แชทเปิดของ KakaoTalk"
+  },
+  "hi": {
+    "A": "सिर्फ़ उदाहरण — अंतिम नहीं, बदल सकता है",
+    "B": "पैच खुद भी फ़ाइनल नहीं है — शेप, साइज़ और फ़िनिश फ़ैक्ट्री के हिसाब से बदल सकते हैं।",
+    "C": "यह सही ईमेल पता नहीं लग रहा है। दोबारा टाइप करें, जैसे",
+    "D": "ज़रूरी — ये सब भरते ही बटन चालू हो जाता है।",
+    "E": "ईमेल",
+    "F": "KakaoTalk की ओपन चैट"
+  },
+  "bn": {
+    "A": "শুধু উদাহরণ — চূড়ান্ত নয়, বদলাতে পারে",
+    "B": "প্যাচটা নিজেও চূড়ান্ত না — আকৃতি, সাইজ আর ফিনিশ ফ্যাক্টরির ওপর নির্ভর করে বদলাতে পারে।",
+    "C": "এটা ঠিক ইমেইল ঠিকানার মতো লাগছে না। আবার লিখুন, যেমন",
+    "D": "প্রয়োজনীয় — এগুলো পূরণ করলেই বাটন চালু হয়ে যাবে।",
+    "E": "ইমেইল",
+    "F": "KakaoTalk-এর ওপেন চ্যাট"
+  },
+  "ne": {
+    "A": "उदाहरण मात्र — अन्तिम होइन, फेरिन सक्छ",
+    "B": "प्याच आफैं पनि अन्तिम होइन — आकार, साइज र फिनिसिङ कारखानाअनुसार फेरिन सक्छ।",
+    "C": "यो सही इमेल ठेगाना जस्तो देखिँदैन। फेरि टाइप गर्नुहोस्, जस्तै",
+    "D": "आवश्यक — यी सबै भर्नेबित्तिकै बटन सक्रिय हुन्छ।",
+    "E": "इमेल",
+    "F": "KakaoTalk को ओपन च्याट"
+  },
+  "tl": {
+    "A": "Halimbawa lang — hindi pa final, puwedeng magbago",
+    "B": "Hindi pa rin final ang patch mismo — puwedeng magbago ang hugis, sukat, at finish depende sa factory.",
+    "C": "Parang hindi tama ang email address na iyan. I-type ulit, gaya ng",
+    "D": "Kinakailangan — gagana ang button kapag napunan na ang mga ito.",
+    "E": "Email",
+    "F": "Open chat ng KakaoTalk"
+  },
+  "ms": {
+    "A": "Contoh sahaja — belum muktamad, boleh berubah",
+    "B": "Tampalan itu sendiri juga belum muktamad — bentuk, saiz dan kemasannya boleh berubah mengikut kilang.",
+    "C": "Itu bukan alamat e-mel yang sah. Sila taip semula, seperti",
+    "D": "Wajib — butang akan aktif sebaik sahaja semua ini diisi.",
+    "E": "E-mel",
+    "F": "Sembang terbuka KakaoTalk"
+  },
+  "tr": {
+    "A": "Sadece örnek — kesin değil, değişebilir",
+    "B": "Yamanın kendisi de kesin değil — şekli, boyutu ve işçiliği fabrikaya göre değişebilir.",
+    "C": "Bu bir e-posta adresine benzemiyor. Tekrar yaz, örneğin",
+    "D": "Zorunlu — bunlar doldurulunca buton aktif olur.",
+    "E": "E-posta",
+    "F": "KakaoTalk açık sohbeti"
+  }
+}

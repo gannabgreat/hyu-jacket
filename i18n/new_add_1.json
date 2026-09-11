@@ -1,0 +1,66 @@
+{
+  "zh": {
+    "A": "仅供参考 · 非最终版本，可能变更",
+    "B": "贴布本身不是最终版本——形状、大小和做工可能会因工厂而变化。",
+    "C": "这看起来不像邮箱地址。请重新输入，比如",
+    "D": "必填——填完这些内容，按钮就会启用。",
+    "E": "邮箱",
+    "F": "KakaoTalk 公开聊天"
+  },
+  "es": {
+    "A": "Solo ejemplos · no son definitivos, pueden cambiar",
+    "B": "El parche en sí no es definitivo: la forma, el tamaño y el acabado pueden cambiar según la fábrica.",
+    "C": "Eso no parece una dirección de correo. Vuelve a escribirla, como",
+    "D": "Obligatorio: el botón se activa en cuanto completes estos campos.",
+    "E": "Correo electrónico",
+    "F": "Chat abierto de KakaoTalk"
+  },
+  "fr": {
+    "A": "Exemples uniquement · pas définitifs, peuvent changer",
+    "B": "L'écusson lui-même n'est pas définitif : la forme, la taille et la finition peuvent changer selon l'usine.",
+    "C": "Ça ne ressemble pas à une adresse e-mail. Retape-la, comme",
+    "D": "Obligatoire : le bouton s'active une fois ces champs remplis.",
+    "E": "E-mail",
+    "F": "Chat ouvert de KakaoTalk"
+  },
+  "vi": {
+    "A": "Chỉ là ví dụ · chưa chốt, có thể thay đổi",
+    "B": "Bản thân miếng cờ chưa phải là bản cuối — hình dạng, kích thước và cách hoàn thiện có thể thay đổi tùy theo xưởng.",
+    "C": "Cái này trông không giống địa chỉ email. Bạn nhập lại nhé, như",
+    "D": "Bắt buộc — nút sẽ bật khi các mục này được điền đầy đủ.",
+    "E": "Email",
+    "F": "Chat mở của KakaoTalk"
+  },
+  "ja": {
+    "A": "あくまで一例 · 変更の可能性あり",
+    "B": "ワッペン自体は最終版ではありません — 形・サイズ・仕上げは工場の都合で変わることがあります。",
+    "C": "メールアドレスの形式ではないようです。もう一度入力してください。例：",
+    "D": "必須 — これらを入力すると、ボタンが有効になります。",
+    "E": "メール",
+    "F": "カカオトーク オープンチャット"
+  },
+  "mn": {
+    "A": "Зөвхөн жишээ · эцсийн биш, өөрчлөгдөж болно",
+    "B": "Наалт өөрөө эцсийн хувилбар биш — хэлбэр, хэмжээ, гүйцэтгэл нь үйлдвэрээс шалтгаалан өөрчлөгдөж болно.",
+    "C": "Энэ имэйл хаяг шиг харагдахгүй байна. Дахин оруулна уу, жишээ нь:",
+    "D": "Заавал — эдгээрийг бөглөмөгц товч идэвхжинэ.",
+    "E": "Имэйл",
+    "F": "KakaoTalk-ийн нээлттэй чат"
+  },
+  "uz": {
+    "A": "Faqat namuna · yakuniy emas, oʻzgarishi mumkin",
+    "B": "Shevronning oʻzi yakuniy emas — shakli, oʻlchami va sifati zavodga qarab oʻzgarishi mumkin.",
+    "C": "Bu email manzilga oʻxshamayapti. Qaytadan kiriting, masalan:",
+    "D": "Majburiy — shularni toʻldirsangiz, tugma yoqiladi.",
+    "E": "Email",
+    "F": "KakaoTalk ochiq chat"
+  },
+  "ru": {
+    "A": "Просто примеры · не финальные, могут измениться",
+    "B": "Сам шеврон не окончательный — форма, размер и отделка могут измениться в зависимости от фабрики.",
+    "C": "Это не похоже на email. Введи его ещё раз, например,",
+    "D": "Обязательно — кнопка включится, когда заполнишь эти поля.",
+    "E": "Email",
+    "F": "Открытый чат в KakaoTalk"
+  }
+}

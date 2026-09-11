@@ -1,0 +1,8 @@
+{
+  "A": {"en": "Examples only — not final, may change", "ko_tail": " · 예시일 뿐 확정 아님, 바뀔 수 있음", "ko_only": "예시일 뿐 확정 아님, 바뀔 수 있음", "where": "소매 자수 예시 사진 위 라벨. 아주 짧게."},
+  "B": {"en": "The patch itself is not final — shape, size and finish can change with the factory.", "ko_tail": " · 와펜 자체는 확정 아님, 공장 사정에 따라 변동될 수 있습니다.", "ko_only": "와펜 자체는 확정 아님, 공장 사정에 따라 변동될 수 있습니다.", "where": "국기 와펜 설명 밑 경고 문장."},
+  "C": {"en": "That doesn't look like an email address. Please type it again, like", "ko_tail": "", "ko_only": "이메일 형식이 올바르지 않습니다. 다시 입력해주세요, 예:", "where": "이메일 입력 오류 안내. 문장이 여기서 끊기고 바로 뒤에 you@example.com 이 붙는다 — 반드시 그 예시 주소로 이어지도록 끝맺어라."},
+  "D": {"en": "Required — the button turns on once these are filled in.", "ko_tail": " · 표시된 항목을 모두 채우면 신청 버튼이 활성화됩니다.", "ko_only": "표시된 항목을 모두 채우면 신청 버튼이 활성화됩니다.", "where": "신청 버튼 밑 * 설명. 앞에 빨간 * 가 따로 붙어 있다."},
+  "E": {"en": "Email", "ko_tail": " · 이메일", "ko_only": "이메일", "where": "연락처 카드의 이메일 주소 밑 작은 라벨. 한 단어."},
+  "F": {"en": "KakaoTalk open chat", "ko_tail": " · 카카오톡 오픈채팅", "ko_only": "카카오톡 오픈채팅", "where": "연락처 카드의 카카오 오픈채팅 링크 밑 작은 라벨. 짧게."}
+}
