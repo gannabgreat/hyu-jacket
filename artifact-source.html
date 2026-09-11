@@ -193,6 +193,7 @@ h1 em{font-style:normal;color:var(--chain);display:block}
 .field .hint{font-size:11.5px;color:var(--ink-3);font-family:var(--f-mono)}
 .req{color:var(--alert);font-weight:700;margin-left:5px}
 .form-card > .hint{font-family:var(--f-mono);font-size:11.5px;line-height:1.6;color:var(--ink-3);margin-top:-4px}
+.lock-note{font-size:13.5px;line-height:1.6;color:var(--ink-2);border-left:4px solid var(--chain);padding:12px 14px;background:var(--surface-2)}
 .btn:disabled{opacity:.42;cursor:not-allowed;transform:none}
 .flag-notice{margin:2px 0 0;font-size:12.5px;line-height:1.5;color:var(--alert);font-weight:500}
 .flag-notice b{font-weight:700}
@@ -615,7 +616,8 @@ footer .mark{color:var(--on-navy)}
             <label for="jConsent">I agree to my information being collected and used as described above. · 위 내용대로 개인정보 수집·이용에 동의합니다. (필수)</label>
           </div>
           <button class="btn btn--gold" type="submit" id="joinBtn" disabled>Add me to the order</button>
-          <p class="hint"><b class="req">*</b> Required — the button turns on once these are filled in. · 표시된 항목을 모두 채우면 신청 버튼이 활성화됩니다.</p>
+          <p class="hint" id="reqHint"><b class="req">*</b> Required — the button turns on once these are filled in. · 표시된 항목을 모두 채우면 신청 버튼이 활성화됩니다.</p>
+          <p class="lock-note" id="lockNote" hidden>Email the organizer at wpalskdl03@gmail.com and we'll change it. Once the jackets go into production, sizes are locked and orders can't be cancelled.</p>
           <p class="form-status" id="joinStatus"></p>
         </form>
 
@@ -758,6 +760,7 @@ footer .mark{color:var(--on-navy)}
 
   /* ---------- required fields gate ---------- */
   function formReady(){
+    if ($("joinBtn").hidden) return false;
     var country = $("jCountry").value, bank = $("jBank").value;
     var ok = !!country && !!$("jSize").value && EMAIL_OK.test($("jEmail").value.trim()) && !!bank
       && (bank !== "no" || !!$("jPay").value.trim())
@@ -860,9 +863,9 @@ footer .mark{color:var(--on-navy)}
     $("jConsent").checked = !!saved.consent;
     payField();
     flagNotices();
-    formReady();
     showReceipt(saved);
-    $("joinBtn").textContent = "Update my entry";
+    if (lastSend()) sealForm();
+    formReady();
   }
 
   /* ---------- submit: Google Sheet (Apps Script) + artifact store + local copy ---------- */
@@ -897,6 +900,14 @@ footer .mark{color:var(--on-navy)}
       return "Already received — nothing changed. 같은 내용으로 이미 접수돼 있어요. 내용을 바꾸면 다시 보낼 수 있어요.";
     }
     return "";
+  }
+
+  /* One entry per browser: once it is in, the form stops taking edits and
+     points at the organizer instead. */
+  function sealForm(){
+    $("joinBtn").hidden = true;
+    $("reqHint").hidden = true;
+    $("lockNote").hidden = false;
   }
 
   var status = $("joinStatus");
@@ -968,7 +979,7 @@ footer .mark{color:var(--on-navy)}
       } else {
         status.textContent = "Saved on this device — copy your spec and email it to wpalskdl03@gmail.com.";
       }
-      $("joinBtn").textContent = "Update my entry";
+      if (anySent) sealForm();
       formReady();
     });
   });
