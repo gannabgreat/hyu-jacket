@@ -894,6 +894,12 @@ footer .mark{color:var(--on-navy)}
   function saveEntries(){
     try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch (e) {}
   }
+  /* ?reset=1 wipes this browser's entries — for clearing test submissions. */
+  if (/[?&]reset=1(&|$)/.test(location.search)) {
+    try {
+      ["hyu-jacket-entries", "hyu-jacket-order", "hyu-jacket-last-send"].forEach(function(k){ localStorage.removeItem(k); });
+    } catch (e) {}
+  }
   var entries = loadEntries();
 
   function specText(f){
