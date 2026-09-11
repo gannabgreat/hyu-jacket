@@ -751,7 +751,9 @@ footer .mark{color:var(--on-navy)}
   $("jCountry").addEventListener("change", flagNotices);
   function payField(){ $("jPayField").hidden = $("jBank").value !== "no"; }
   $("jBank").addEventListener("change", payField);
-  var EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  /* Deliberately stricter than RFC 5322: the organizer has to be able to actually
+     mail these people. Rejects non-ASCII local parts, doubled dots and bare TLDs. */
+  var EMAIL_OK = /^[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
   function emailNotice(){
     var v = $("jEmail").value.trim();
     $("jEmailNote").hidden = !v || EMAIL_OK.test(v);
