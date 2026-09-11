@@ -1,0 +1,14 @@
+{
+  "G": {"en": "Interest check", "ko_tail": "", "ko_only": "수요조사", "where": "신청 섹션 대제목 바로 밑에 크게 들어가는 문구. 아주 짧게, 명사구."},
+  "H": {"en": "We'll email you as soon as the interest check closes.", "ko_tail": " · 수요조사가 마무리되는 대로 입력하신 이메일로 연락드리겠습니다.", "ko_only": "수요조사가 마무리되는 대로 입력하신 이메일로 연락드리겠습니다.", "where": "신청 제출 직후 뜨는 팝업 본문. 바로 밑에 신청자가 적은 이메일 주소가 표시된다."},
+  "I": {"en": "Close", "ko_tail": " · 닫기", "ko_only": "닫기", "where": "팝업 닫기 버튼. 한 단어."},
+  "J": {"en": "Click to copy the link", "ko_tail": " · 눌러서 링크 복사", "ko_only": "눌러서 링크 복사", "where": "연락처 카드 안 '친구에게 공유' 칸의 작은 설명줄. 짧게."},
+  "K": {"en": "Link copied", "ko_tail": "", "ko_only": "링크 복사됨", "where": "공유 버튼을 눌렀을 때 2초간 뜨는 완료 표시. 아주 짧게."},
+  "L": {"en": "Collected: email, flag choice, size, sleeve text, whether you have a Korean bank account, preferred payment method, and whatever you write in the question box.", "ko_tail": " · 수집 항목: 이메일, 국기 선택, 사이즈, 소매 문구, 한국 계좌 유무, 결제 수단, 문의 내용", "ko_only": "수집 항목: 이메일, 국기 선택, 사이즈, 소매 문구, 한국 계좌 유무, 결제 수단, 문의 내용", "where": "개인정보 수집·이용 동의문 항목. 법적 고지라 정확하고 단정하게."},
+  "M": {"en": "Purpose: running this group order — payment guidance, production, pick-up notices.", "ko_tail": " · 이용 목적: 공동구매 진행(결제 안내·제작·수령 안내)", "ko_only": "이용 목적: 공동구매 진행(결제 안내·제작·수령 안내)", "where": "개인정보 동의문 항목."},
+  "N": {"en": "Kept until the jackets are handed out, and deleted within 6 months after that.", "ko_tail": " · 보유 기간: 수령 완료 후 6개월 이내 파기", "ko_only": "보유 기간: 수령 완료 후 6개월 이내 파기", "where": "개인정보 동의문 항목."},
+  "O": {"en": "You may refuse. If you do, we simply can't place your order — there is no other consequence.", "ko_tail": " · 동의를 거부할 수 있으며, 거부 시 신청 접수가 불가한 것 외에 불이익은 없습니다", "ko_only": "동의를 거부할 수 있으며, 거부 시 신청 접수가 불가한 것 외에 불이익은 없습니다", "where": "개인정보 동의문 항목."},
+  "P": {"en": "Ask to see, correct or delete your entry any time: wpalskdl03@gmail.com", "ko_tail": " · 열람·정정·삭제 요청은 같은 메일로", "ko_only": "열람·정정·삭제 요청은 같은 메일로: wpalskdl03@gmail.com", "where": "개인정보 동의문 항목. 이메일 주소는 그대로 둘 것."},
+  "Q": {"en": "e.g. Nigeria, Peru, Norway", "ko_tail": "", "ko_only": "예: 나이지리아, 페루, 노르웨이", "where": "국가 직접입력 칸의 placeholder. 나라 이름은 해당 언어 표기로."},
+  "R": {"en": "Whatever is easiest for you", "ko_tail": " · 편한 결제 수단을 적어주세요 (예: PayPal, Wise, coin, cash)", "ko_only": "편한 결제 수단을 적어주세요 (예: PayPal, Wise, coin, cash)", "where": "결제 수단 입력칸 밑 도움말."}
+}
