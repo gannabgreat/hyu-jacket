@@ -15,9 +15,6 @@
 // it only drops bots that hit the URL without reading the page first.
 var TOKEN = 'hyu-jacket-2026';
 
-// Leave empty to mail the account that owns this script.
-var NOTIFY_EMAIL = '';
-
 // The spreadsheet this writes to. Addressed by id rather than
 // getActiveSpreadsheet() so the script works standalone as well as bound.
 var SHEET_ID     = '1Pv1dVRG_HAVH3epj4tRk_AdW1c7rGU5Oz1oo5OiIH-4';
@@ -86,7 +83,6 @@ function doPost(e) {
         confirmToApplicant(row);
       }
 
-      notify(row, updated, sheet.getLastRow() - 1);
       return json({ ok: true, updated: updated });
     } finally {
       lock.releaseLock();
@@ -117,21 +113,8 @@ function findRow(sheet, id) {
   return -1;
 }
 
-function notify(row, updated, total) {
-  var to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
-  if (!to) return;
-  var lines = [];
-  for (var i = 0; i < HEADERS.length; i++) lines.push(HEADERS[i] + ': ' + row[i]);
-  lines.push('', '누적 신청: ' + total + '명');
-  try {
-    MailApp.sendEmail(to,
-      (updated ? '[자켓] 신청 수정 — ' : '[자켓] 새 신청 — ') + row[5] + ' / ' + row[4],
-      lines.join('\n'));
-  } catch (err) {
-    // Mail quota is not a reason to lose the row.
-  }
-}
-
+// The only mail this script sends. No organizer copy: everything is in the
+// sheet, and one mail per entry keeps the 100/day consumer quota at 100 entries.
 // Receipt for the person who filled the form. English only on purpose: one
 // message goes out to two dozen first languages and English is the shared one.
 function confirmToApplicant(row) {
