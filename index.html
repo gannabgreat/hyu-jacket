@@ -199,6 +199,16 @@ h1 em{font-style:normal;color:var(--chain);display:block}
 .field .hint{font-size:11.5px;color:var(--ink-3);font-family:var(--f-mono)}
 .req{color:var(--alert);font-weight:700;margin-left:5px}
 .form-card > .hint{font-family:var(--f-mono);font-size:11.5px;line-height:1.6;color:var(--ink-3);margin-top:-4px}
+#receipts{display:flex;flex-direction:column;gap:12px}
+.receipt h3 .rcount{font-family:var(--f-mono);font-size:13px;margin-left:10px;color:var(--on-navy-2)}
+.join .interest-check{margin-top:12px;font-family:var(--f-display);font-weight:900;font-size:clamp(28px,4.4vw,44px);line-height:1;text-transform:uppercase;letter-spacing:.02em;color:var(--chain-bright)}
+.modal{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,12,24,.66);backdrop-filter:blur(3px)}
+.modal[hidden]{display:none}
+.modal-card{background:var(--paper);color:var(--ink);max-width:440px;width:100%;padding:30px 28px;border:2px solid var(--chain-bright);display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.modal-card h3{font-size:30px;text-transform:uppercase;color:var(--chain)}
+.modal-lead{font-size:15px;line-height:1.65;color:var(--ink-2)}
+.modal-email{font-family:var(--f-mono);font-size:15px;font-weight:700;word-break:break-all;background:var(--surface-2);padding:11px 13px;border-left:4px solid var(--chain)}
+.modal-card .btn{align-self:flex-start}
 .lock-note{font-size:13.5px;line-height:1.6;color:var(--ink-2);border-left:4px solid var(--chain);padding:12px 14px;background:var(--surface-2)}
 .btn:disabled{opacity:.42;cursor:not-allowed;transform:none}
 .flag-notice{margin:2px 0 0;font-size:12.5px;line-height:1.5;color:var(--alert);font-weight:500}
@@ -288,6 +298,9 @@ h1 em{font-style:normal;color:var(--chain);display:block}
 .contact-card .slot{font-family:var(--f-mono);font-size:16px;font-weight:600;color:#14161C;background:#fff;padding:13px 15px;border:1px solid #fff;text-decoration:none;word-break:break-all;display:block}
 .contact-card a.slot:hover{background:var(--chain-bright);color:#14161C}
 .contact-card .slot .sub{display:block;font-size:11.5px;font-weight:500;letter-spacing:.04em;color:#5A6070;margin-top:3px}
+.contact-card .slot--share{border:2px dashed var(--chain);background:#fff;cursor:pointer;font-family:var(--f-mono);font-size:16px;font-weight:600;text-align:left;width:100%;display:block}
+.contact-card .slot--share:hover{background:var(--chain-bright);color:#14161C}
+.contact-card .slot--share[data-state="done"]{border-style:solid;border-color:var(--ok);background:#fff}
 .contact-card p{font-size:13px;color:var(--on-navy-2)}
 
 /* ---------- faq ---------- */
@@ -405,9 +418,9 @@ footer .mark{color:var(--on-navy)}
 
         <div class="cta-row">
           <a class="btn btn--cta" href="#join">Join the order</a>
-          <button type="button" class="btn-share" id="shareBtn">
+          <button type="button" class="btn-share js-share" id="shareBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
-            <span id="shareLabel">Share with your friends</span>
+            <span id="shareLabel" class="js-share-label">Share with your friends</span>
           </button>
         </div>
       </div>
@@ -542,6 +555,7 @@ footer .mark{color:var(--on-navy)}
     <div class="wrap">
       <span class="eyebrow">Join</span>
       <h2 class="sec-title">Add yourself<br>to the order</h2>
+      <p class="interest-check">Interest check</p>
       <p class="sec-lead">One click puts you on the order list. We record your country, size, email and whether you have a Korean bank account — nothing else. Your email is only used to send payment and pick-up details.</p>
       <p class="ko" style="margin-top:8px;color:var(--on-navy-2)">국가·사이즈·이메일·한국 계좌 유무만 기록됩니다. 이메일은 결제·수령 안내에만 사용합니다.</p>
 
@@ -628,15 +642,28 @@ footer .mark{color:var(--on-navy)}
         </form>
 
         <div>
-          <div class="receipt" id="receipt">
-            <h3>You're in</h3>
-            <pre id="receiptText"></pre>
-            <button class="btn btn--ghost" type="button" id="copyBtn" style="color:var(--on-navy);border-color:var(--on-navy);align-self:flex-start">Copy my spec</button>
+          <div id="receipts">
+            <div class="receipt" id="receipt1">
+              <h3>You're in<span class="rcount">#1</span></h3>
+              <pre id="receiptText1"></pre>
+              <button class="btn btn--ghost" type="button" id="copyBtn1" style="color:var(--on-navy);border-color:var(--on-navy);align-self:flex-start">Copy my spec</button>
+            </div>
+            <div class="receipt" id="receipt2">
+              <h3>You're in<span class="rcount">#2</span></h3>
+              <pre id="receiptText2"></pre>
+              <button class="btn btn--ghost" type="button" id="copyBtn2" style="color:var(--on-navy);border-color:var(--on-navy);align-self:flex-start">Copy my spec</button>
+            </div>
+            <div class="receipt" id="receipt3">
+              <h3>You're in<span class="rcount">#3</span></h3>
+              <pre id="receiptText3"></pre>
+              <button class="btn btn--ghost" type="button" id="copyBtn3" style="color:var(--on-navy);border-color:var(--on-navy);align-self:flex-start">Copy my spec</button>
+            </div>
           </div>
           <div class="contact-card" style="margin-top:16px">
             <span class="k">Organizer contact</span>
             <a class="slot" href="mailto:wpalskdl03@gmail.com">wpalskdl03@gmail.com<span class="sub">Email &middot; 이메일</span></a>
             <a class="slot" href="https://open.kakao.com/o/stXRSUMi" target="_blank" rel="noopener">open.kakao.com/o/stXRSUMi<span class="sub">KakaoTalk open chat &middot; 카카오톡 오픈채팅</span></a>
+            <button type="button" class="slot slot--share js-share" id="shareSlot">Share with your friends<span class="sub js-share-label">Click to copy the link · 눌러서 링크 복사</span></button>
             <p>Your entry is sent to us automatically when you press the button. Use these if you have questions or want to change something later.<br>신청은 버튼을 누르면 자동으로 접수됩니다. 문의나 변경은 아래 연락처로.</p>
           </div>
         </div>
@@ -646,6 +673,15 @@ footer .mark{color:var(--on-navy)}
 
   <div class="rib-rule"></div>
 
+
+  <div class="modal" id="sentModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="sentTitle">
+      <h3 id="sentTitle">You're in</h3>
+      <p class="modal-lead">We'll email you as soon as the interest check closes. · 수요조사가 마무리되는 대로 입력하신 이메일로 연락드리겠습니다.</p>
+      <p class="modal-email" id="sentEmail"></p>
+      <button class="btn btn--gold" type="button" id="sentClose">Close · 닫기</button>
+    </div>
+  </div>
   <!-- faq -->
   <section class="band wrap band--tint">
     <span class="eyebrow">Questions</span>
@@ -766,7 +802,7 @@ footer .mark{color:var(--on-navy)}
 
   /* ---------- required fields gate ---------- */
   function formReady(){
-    if ($("joinBtn").hidden) return false;
+    if (entries && entries.length >= MAX_ENTRIES) { $("joinBtn").disabled = true; return false; }
     var country = $("jCountry").value, bank = $("jBank").value;
     var ok = !!country && !!$("jSize").value && EMAIL_OK.test($("jEmail").value.trim()) && !!bank
       && (bank !== "no" || !!$("jPay").value.trim())
@@ -824,29 +860,48 @@ footer .mark{color:var(--on-navy)}
     return "";
   }
 
-  /* ---------- receipt ---------- */
-  function showReceipt(f){
+  /* ---------- receipts: up to three jackets from one browser ---------- */
+  var MAX_ENTRIES = 3;
+  var ENTRIES_KEY = "hyu-jacket-entries";
+
+  function loadEntries(){
+    var raw = null;
+    try { raw = JSON.parse(localStorage.getItem(ENTRIES_KEY) || "null"); } catch (e) {}
+    if (!raw) {
+      // migrate the single-entry format this page used before
+      var one = null;
+      try { one = JSON.parse(localStorage.getItem("hyu-jacket-order") || "null"); } catch (e) {}
+      raw = one ? [one] : [];
+    }
+    return raw.slice(0, MAX_ENTRIES);
+  }
+  function saveEntries(){
+    try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch (e) {}
+  }
+  var entries = loadEntries();
+
+  function specText(f){
     var c = byCode[f.country];
-    var text =
-      "HANYANG VARSITY JACKET — order spec\n" +
+    return "HANYANG VARSITY JACKET \u2014 order spec\n" +
       "Size      : " + f.size + "\n" +
-      "Flag      : " + (c[0] === "NONE" ? "— no flag —"
+      "Flag      : " + (c[0] === "NONE" ? "\u2014 no flag \u2014"
                         : c[0] === "ZZ" ? f.other + " (flag confirmed by email)"
                         : c[2] + " (" + c[0] + ")") + "\n" +
-      "Sleeve    : " + (f.initials ? f.initials : "— none —") + "\n" +
+      "Sleeve    : " + (f.initials ? f.initials : "\u2014 none \u2014") + "\n" +
       "Email     : " + f.email + "\n" +
       "KR bank   : " + (f.bank === "yes" ? "yes" : "no") + "\n" +
       (f.bank === "no" ? "Pay via   : " + f.pay + "\n" : "") +
-      "Joined    : " + new Date().toLocaleDateString("en-CA") +
+      "Joined    : " + (f.joined || new Date().toLocaleDateString("en-CA")) +
       (f.question ? "\nQuestion  : " + f.question : "");
-    $("receiptText").textContent = text;
-    $("receipt").classList.add("on");
-    $("copyBtn").onclick = function(){
-      var btn = this;
+  }
+
+  function bindCopy(btn, text){
+    btn.onclick = function(){
+      var was = btn.textContent;
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(function(){
           btn.textContent = "Copied";
-          setTimeout(function(){ btn.textContent = "Copy my spec"; }, 1800);
+          setTimeout(function(){ btn.textContent = was; }, 1800);
         }, function(){ btn.textContent = "Select the text above"; });
       } else {
         btn.textContent = "Select the text above";
@@ -854,9 +909,20 @@ footer .mark{color:var(--on-navy)}
     };
   }
 
+  function renderEntries(){
+    for (var i = 0; i < MAX_ENTRIES; i++) {
+      var card = $("receipt" + (i + 1));
+      if (!entries[i]) { card.classList.remove("on"); continue; }
+      var text = specText(entries[i]);
+      $("receiptText" + (i + 1)).textContent = text;
+      card.classList.add("on");
+      bindCopy($("copyBtn" + (i + 1)), text);
+    }
+    $("lockNote").hidden = entries.length < MAX_ENTRIES;
+  }
+
   /* ---------- restore this device's own entry ---------- */
-  var saved = null;
-  try { saved = JSON.parse(localStorage.getItem("hyu-jacket-order") || "null"); } catch (e) {}
+  var saved = entries.length ? entries[entries.length - 1] : null;
   if (saved) {
     $("jCountry").value = saved.country;
     $("jSize").value = saved.size;
@@ -869,10 +935,9 @@ footer .mark{color:var(--on-navy)}
     $("jConsent").checked = !!saved.consent;
     payField();
     flagNotices();
-    showReceipt(saved);
-    if (lastSend()) sealForm();
-    formReady();
   }
+  renderEntries();
+  formReady();
 
   /* ---------- submit: Google Sheet (Apps Script) + artifact store + local copy ---------- */
   // Paste the Apps Script "Web app" URL here. Empty = no remote send (browser-only save).
@@ -881,40 +946,36 @@ footer .mark{color:var(--on-navy)}
   // endpoint without reading the page. Must match TOKEN in the Apps Script.
   var SHARED_TOKEN = "hyu-jacket-2026";
 
-  /* ---------- send guard: honeypot + cooldown + duplicate ---------- */
+  /* ---------- send guard: honeypot + cooldown ---------- */
+  /* No duplicate-content rule: two friends can legitimately want the same size,
+     the same flag and no sleeve text. The three-entry cap is the real limit. */
   var COOLDOWN_MS = 20000;                   // two sends from this browser can't be closer
-  var DUP_WINDOW_MS = 6 * 60 * 60 * 1000;    // an unchanged entry isn't resent within this window
 
-  function fingerprint(f){
-    return [f.country, f.other, f.size, f.email, f.bank, f.pay, f.initials, f.question].join("\u0001");
-  }
   function lastSend(){
     try { return JSON.parse(localStorage.getItem("hyu-jacket-last-send") || "null"); } catch (e) { return null; }
   }
-  function markSend(f){
-    try { localStorage.setItem("hyu-jacket-last-send", JSON.stringify({ ts: Date.now(), fp: fingerprint(f) })); } catch (e) {}
+  function markSend(){
+    try { localStorage.setItem("hyu-jacket-last-send", JSON.stringify({ ts: Date.now() })); } catch (e) {}
   }
-  function blockReason(f){
+  function blockReason(){
     var last = lastSend();
     if (!last || !last.ts) return "";
     var age = Date.now() - last.ts;
-    if (age < 0) return "";
-    if (age < COOLDOWN_MS) {
-      return "You just sent this — give it a few seconds. 방금 보냈어요, 잠시 후 다시 시도해주세요.";
-    }
-    if (last.fp === fingerprint(f) && age < DUP_WINDOW_MS) {
-      return "Already received — nothing changed. 같은 내용으로 이미 접수돼 있어요. 내용을 바꾸면 다시 보낼 수 있어요.";
-    }
-    return "";
+    if (age < 0 || age >= COOLDOWN_MS) return "";
+    return "You just sent this — give it a few seconds. 방금 보냈어요, 잠시 후 다시 시도해주세요.";
   }
 
-  /* One entry per browser: once it is in, the form stops taking edits and
-     points at the organizer instead. */
-  function sealForm(){
-    $("joinBtn").hidden = true;
-    $("reqHint").hidden = true;
-    $("lockNote").hidden = false;
+  /* ---------- "we'll email you" dialog ---------- */
+  var sentModal = $("sentModal");
+  function openSent(email){
+    $("sentEmail").textContent = email;
+    sentModal.hidden = false;
+    $("sentClose").focus();
   }
+  function closeSent(){ sentModal.hidden = true; }
+  $("sentClose").addEventListener("click", closeSent);
+  sentModal.addEventListener("click", function(e){ if (e.target === sentModal) closeSent(); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !sentModal.hidden) closeSent(); });
 
   var status = $("joinStatus");
   var idv = localId();
@@ -923,7 +984,7 @@ footer .mark{color:var(--on-navy)}
     if (!SHEET_ENDPOINT) return Promise.resolve("skipped");
     var c = byCode[f.country];
     var payload = {
-      id: idv, ts: new Date().toISOString(),
+      id: f.entryId || idv, ts: new Date().toISOString(),
       initials: f.initials, country: f.country,
       countryName: f.country === "ZZ" ? f.other : c[2], flag: c[1],
       consent: f.consent ? "동의" : "", consentTs: new Date().toISOString(),
@@ -949,7 +1010,7 @@ footer .mark{color:var(--on-navy)}
   function saveToArtifact(f){
     if (!artifactCol) return Promise.resolve("skipped");
     var c = byCode[f.country];
-    return artifactCol.doc(idv).set({ country: f.country, other: f.other, consent: f.consent, flag: c[1], size: f.size, email: f.email, krBank: f.bank, payMethod: f.pay, question: f.question, ts: Date.now() })
+    return artifactCol.doc(f.entryId || idv).set({ country: f.country, other: f.other, consent: f.consent, flag: c[1], size: f.size, email: f.email, krBank: f.bank, payMethod: f.pay, question: f.question, ts: Date.now() })
       .then(function(){ return "sent"; });
   }
 
@@ -957,12 +1018,24 @@ footer .mark{color:var(--on-navy)}
     e.preventDefault();
     var f = readForm(), err = validate(f);
     if (err) { status.textContent = err; return; }
+    if (entries.length >= MAX_ENTRIES) {
+      status.textContent = "Three jackets is the most one browser can order. 이 브라우저에서는 최대 3벌까지 신청할 수 있습니다.";
+      formReady();
+      return;
+    }
+    f.entryId = idv + "-" + (entries.length + 1);
 
     // Bot filled the hidden field: act successful, send nothing.
     var hp = $("jWebsite");
-    if (hp && hp.value) { showReceipt(f); status.textContent = "Received. 접수됐어요."; return; }
+    if (hp && hp.value) {
+      /* Bot filled the hidden field: show the same receipt, store and send nothing. */
+      $("receiptText1").textContent = specText(f);
+      $("receipt1").classList.add("on");
+      status.textContent = "Received. 접수됐어요.";
+      return;
+    }
 
-    var blocked = blockReason(f);
+    var blocked = blockReason();
     if (blocked) { status.textContent = blocked; return; }
 
     $("joinBtn").disabled = true;
@@ -974,18 +1047,21 @@ footer .mark{color:var(--on-navy)}
         saveToArtifact(f).then(function(r){ return r; }, function(){ return "failed"; })
       ]);
     }).then(function(res){
-      try { localStorage.setItem("hyu-jacket-order", JSON.stringify(f)); } catch (e) {}
-      showReceipt(f);
       var anySent = res.indexOf("sent") !== -1, anyFailed = res.indexOf("failed") !== -1;
-      if (anySent) markSend(f);
+      f.joined = new Date().toLocaleDateString("en-CA");
+      entries.push(f);
+      saveEntries();
+      renderEntries();
+      if (anySent) { markSend(); openSent(f.email); }
       if (anySent) {
-        status.textContent = "Received — we'll email you at " + f.email + ". 신청 완료, 이메일로 안내드릴게요.";
+        status.textContent = entries.length >= MAX_ENTRIES
+          ? "Received — that's three jackets, the most one browser can order. 신청 완료. 이 브라우저에서는 최대 3벌까지입니다."
+          : "Received — we'll email you at " + f.email + ". Want another jacket? Change the details and press again — up to three. 신청 완료. 한 벌 더 신청하려면 내용을 바꿔 다시 눌러주세요(최대 3벌).";
       } else if (anyFailed) {
         status.textContent = "Couldn't send. Check your connection and try again, or email your spec to wpalskdl03@gmail.com.";
       } else {
         status.textContent = "Saved on this device — copy your spec and email it to wpalskdl03@gmail.com.";
       }
-      if (anySent) sealForm();
       formReady();
     });
   });
@@ -1084,12 +1160,9 @@ footer .mark{color:var(--on-navy)}
 /* ---------- share: copy the page link, keeping the reader's language ---------- */
 (function(){
   "use strict";
-  var btn = document.getElementById("shareBtn");
-  var label = document.getElementById("shareLabel");
-  if (!btn || !label) return;
+  /* buttons are wired below, one listener each */
 
   var DONE = {"en":"Link copied","zh":"链接已复制","es":"Enlace copiado","fr":"Lien copié"};
-  var timer = null;
 
   function shareUrl(){
     var lang = document.documentElement.getAttribute("data-lang") || "en";
@@ -1119,30 +1192,34 @@ footer .mark{color:var(--on-navy)}
     return ok;
   }
 
-  function flash(){
+  function flash(el, label){
     var lang = document.documentElement.getAttribute("data-lang") || "en";
     var was = label.textContent;
     label.textContent = DONE[lang] || DONE.en;
-    btn.setAttribute("data-state", "done");
-    clearTimeout(timer);
-    timer = setTimeout(function(){
+    el.setAttribute("data-state", "done");
+    clearTimeout(el.flashTimer);
+    el.flashTimer = setTimeout(function(){
       label.textContent = was;
-      btn.removeAttribute("data-state");
+      el.removeAttribute("data-state");
     }, 2000);
   }
 
-  btn.addEventListener("click", function(){
-    var url = shareUrl();
-    var copied = legacyCopy(url);
-    if (copied) flash();
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url).then(
-        function(){ if (!copied) flash(); },
-        function(){ if (!copied) window.prompt("Copy this link:", url); }
-      );
-    } else if (!copied) {
-      window.prompt("Copy this link:", url);
-    }
+  /* Every .js-share element copies the same link; each flashes its own label. */
+  Array.prototype.forEach.call(document.querySelectorAll(".js-share"), function(el){
+    var label = el.querySelector(".js-share-label") || el;
+    el.addEventListener("click", function(){
+      var url = shareUrl();
+      var copied = legacyCopy(url);
+      if (copied) flash(el, label);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(
+          function(){ if (!copied) flash(el, label); },
+          function(){ if (!copied) window.prompt("Copy this link:", url); }
+        );
+      } else if (!copied) {
+        window.prompt("Copy this link:", url);
+      }
+    });
   });
 })();
 </script>
