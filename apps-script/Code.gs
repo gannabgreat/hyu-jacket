@@ -18,6 +18,9 @@ var TOKEN = 'hyu-jacket-2026';
 // Leave empty to mail the account that owns this script.
 var NOTIFY_EMAIL = '';
 
+// The spreadsheet this writes to. Addressed by id rather than
+// getActiveSpreadsheet() so the script works standalone as well as bound.
+var SHEET_ID     = '1Pv1dVRG_HAVH3epj4tRk_AdW1c7rGU5Oz1oo5OiIH-4';
 var SHEET_NAME   = 'orders';
 var PER_ID_MS    = 20 * 1000;  // same browser: one write per 20s
 var FLOOD_MAX    = 20;         // everyone together: max writes per minute
@@ -80,6 +83,7 @@ function doPost(e) {
         updated = true;
       } else {
         sheet.appendRow(row);
+        confirmToApplicant(row);
       }
 
       notify(row, updated, sheet.getLastRow() - 1);
@@ -93,7 +97,7 @@ function doPost(e) {
 }
 
 function getSheet() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(SHEET_ID);
   var sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADERS);
@@ -123,6 +127,42 @@ function notify(row, updated, total) {
     MailApp.sendEmail(to,
       (updated ? '[자켓] 신청 수정 — ' : '[자켓] 새 신청 — ') + row[5] + ' / ' + row[4],
       lines.join('\n'));
+  } catch (err) {
+    // Mail quota is not a reason to lose the row.
+  }
+}
+
+// Receipt for the person who filled the form. English only on purpose: one
+// message goes out to two dozen first languages and English is the shared one.
+function confirmToApplicant(row) {
+  var to = String(row[6] || '');
+  if (!to) return;
+  var body = [
+    'Hi,',
+    '',
+    'Thanks for taking part in the interest check for the Hanyang varsity jacket group order.',
+    '',
+    'Your entry is on the list. As soon as the order is confirmed we will email you at this address with the payment and pick-up details.',
+    '',
+    'What we have for you',
+    '  Size        : ' + (row[5] || '-'),
+    '  Flag        : ' + (row[4] || '-'),
+    '  Sleeve text : ' + (row[2] || '(none)'),
+    '  Korean bank : ' + (row[7] || '-'),
+    '',
+    'Nothing is charged yet and nothing is final. If any of the above is wrong,',
+    'just reply to this email and we will fix it.',
+    '',
+    'Hanyang Varsity Jacket group order',
+    'wpalskdl03@gmail.com'
+  ].join('\n');
+  try {
+    MailApp.sendEmail({
+      to: to,
+      subject: 'Hanyang varsity jacket - thanks for joining the interest check',
+      body: body,
+      name: 'Hanyang Varsity Jacket'
+    });
   } catch (err) {
     // Mail quota is not a reason to lose the row.
   }
