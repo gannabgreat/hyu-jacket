@@ -199,9 +199,9 @@ h1 em{font-style:normal;color:var(--chain);display:block}
 .field .hint{font-size:11.5px;color:var(--ink-3);font-family:var(--f-mono)}
 .req{color:var(--alert);font-weight:700;margin-left:5px}
 .form-card > .hint{font-family:var(--f-mono);font-size:11.5px;line-height:1.6;color:var(--ink-3);margin-top:-4px}
-#receipts{display:flex;flex-direction:column;gap:12px}
+#receipts{display:flex;flex-direction:column;gap:12px;margin-top:16px}
 .receipt h3 .rcount{font-family:var(--f-mono);font-size:13px;margin-left:10px;color:var(--on-navy-2)}
-.join .interest-check{margin-top:12px;font-family:var(--f-display);font-weight:900;font-size:clamp(28px,4.4vw,44px);line-height:1;text-transform:uppercase;letter-spacing:.02em;color:var(--chain-bright)}
+.join .interest-check{margin:10px 0 6px;font-family:var(--f-display);font-weight:900;font-size:clamp(40px,6.6vw,72px);line-height:.95;text-transform:uppercase;letter-spacing:.01em;color:var(--chain-bright)}
 .modal{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,12,24,.66);backdrop-filter:blur(3px)}
 .modal[hidden]{display:none}
 .modal-card{background:var(--paper);color:var(--ink);max-width:440px;width:100%;padding:30px 28px;border:2px solid var(--chain-bright);display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
@@ -298,9 +298,22 @@ h1 em{font-style:normal;color:var(--chain);display:block}
 .contact-card .slot{font-family:var(--f-mono);font-size:16px;font-weight:600;color:#14161C;background:#fff;padding:13px 15px;border:1px solid #fff;text-decoration:none;word-break:break-all;display:block}
 .contact-card a.slot:hover{background:var(--chain-bright);color:#14161C}
 .contact-card .slot .sub{display:block;font-size:11.5px;font-weight:500;letter-spacing:.04em;color:#5A6070;margin-top:3px}
-.contact-card .slot--share{border:2px dashed var(--chain);background:#fff;cursor:pointer;font-family:var(--f-mono);font-size:16px;font-weight:600;text-align:left;width:100%;display:block}
-.contact-card .slot--share:hover{background:var(--chain-bright);color:#14161C}
-.contact-card .slot--share[data-state="done"]{border-style:solid;border-color:var(--ok);background:#fff}
+.share-card{
+  position:relative;overflow:hidden;isolation:isolate;margin-top:16px;width:100%;display:block;text-align:left;
+  border:3px dashed var(--chain);background:#fff;color:#14161C;padding:20px 22px;cursor:pointer;
+  animation:ctaPulse 2.4s ease-in-out infinite;
+}
+.share-card::after{
+  content:"";position:absolute;top:-60%;left:-85%;width:55%;height:220%;z-index:-1;
+  background:linear-gradient(100deg,transparent,rgba(212,160,60,.55),transparent);
+  transform:skewX(-22deg);animation:ctaShine 3.4s ease-in-out infinite;
+}
+.share-card-title{display:block;font-family:var(--f-mono);font-size:17px;font-weight:700;letter-spacing:.04em}
+.share-card-sub{display:block;font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:.04em;color:#5A6070;margin-top:5px}
+.share-card:hover{background:var(--chain-bright);animation:none}
+.share-card[data-state="done"]{border-style:solid;border-color:var(--ok);animation:none}
+.share-card[data-state="done"]::after{opacity:0}
+@media (prefers-reduced-motion:reduce){.share-card{animation:none}.share-card::after{display:none}}
 .contact-card p{font-size:13px;color:var(--on-navy-2)}
 
 /* ---------- faq ---------- */
@@ -554,8 +567,8 @@ footer .mark{color:var(--on-navy)}
   <section class="band join" id="join">
     <div class="wrap">
       <span class="eyebrow">Join</span>
-      <h2 class="sec-title">Add yourself<br>to the order</h2>
       <p class="interest-check">Interest check</p>
+      <h2 class="sec-title">Add yourself<br>to the order</h2>
       <p class="sec-lead">One click puts you on the order list. We record your country, size, email and whether you have a Korean bank account — nothing else. Your email is only used to send payment and pick-up details.</p>
       <p class="ko" style="margin-top:8px;color:var(--on-navy-2)">국가·사이즈·이메일·한국 계좌 유무만 기록됩니다. 이메일은 결제·수령 안내에만 사용합니다.</p>
 
@@ -614,7 +627,7 @@ footer .mark{color:var(--on-navy)}
           <div class="field" id="jPayField" hidden>
             <label for="jPay">Which payment method works best for you?<b class="req">*</b></label>
             <input id="jPay" type="text" maxlength="80" placeholder="e.g. PayPal, Wise, coin, cash" autocomplete="off">
-            <span class="hint">편한 결제 수단을 적어주세요 · 예: PayPal, Wise, coin, cash</span>
+            <span class="hint">Whatever is easiest for you · 편한 결제 수단을 적어주세요 (예: PayPal, Wise, coin, cash)</span>
           </div>
           <div class="field">
             <label for="jQuestion">Questions for the organizer (optional)</label>
@@ -642,6 +655,16 @@ footer .mark{color:var(--on-navy)}
         </form>
 
         <div>
+          <div class="contact-card">
+            <span class="k">Organizer contact</span>
+            <a class="slot" href="mailto:wpalskdl03@gmail.com">wpalskdl03@gmail.com<span class="sub">Email &middot; 이메일</span></a>
+            <a class="slot" href="https://open.kakao.com/o/stXRSUMi" target="_blank" rel="noopener">open.kakao.com/o/stXRSUMi<span class="sub">KakaoTalk open chat &middot; 카카오톡 오픈채팅</span></a>
+            <p>Your entry is sent to us automatically when you press the button. Use these if you have questions or want to change something later.<br>신청은 버튼을 누르면 자동으로 접수됩니다. 문의나 변경은 아래 연락처로.</p>
+          </div>
+          <button type="button" class="share-card js-share" id="shareSlot">
+            <span class="share-card-title">Share with your friends</span>
+            <span class="share-card-sub js-share-label">Click to copy the link &middot; 눌러서 링크 복사</span>
+          </button>
           <div id="receipts">
             <div class="receipt" id="receipt1">
               <h3>You're in<span class="rcount">#1</span></h3>
@@ -658,13 +681,6 @@ footer .mark{color:var(--on-navy)}
               <pre id="receiptText3"></pre>
               <button class="btn btn--ghost" type="button" id="copyBtn3" style="color:var(--on-navy);border-color:var(--on-navy);align-self:flex-start">Copy my spec</button>
             </div>
-          </div>
-          <div class="contact-card" style="margin-top:16px">
-            <span class="k">Organizer contact</span>
-            <a class="slot" href="mailto:wpalskdl03@gmail.com">wpalskdl03@gmail.com<span class="sub">Email &middot; 이메일</span></a>
-            <a class="slot" href="https://open.kakao.com/o/stXRSUMi" target="_blank" rel="noopener">open.kakao.com/o/stXRSUMi<span class="sub">KakaoTalk open chat &middot; 카카오톡 오픈채팅</span></a>
-            <button type="button" class="slot slot--share js-share" id="shareSlot">Share with your friends<span class="sub js-share-label">Click to copy the link · 눌러서 링크 복사</span></button>
-            <p>Your entry is sent to us automatically when you press the button. Use these if you have questions or want to change something later.<br>신청은 버튼을 누르면 자동으로 접수됩니다. 문의나 변경은 아래 연락처로.</p>
           </div>
         </div>
       </div>
