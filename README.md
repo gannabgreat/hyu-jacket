@@ -9,6 +9,7 @@
 | `index.html` | **더블클릭하면 바로 열리는 완성본.** 어느 웹호스팅에 올려도 그대로 동작합니다. |
 | `artifact-source.html` | Claude 아티팩트용 원본. `<!doctype>`·`<head>` 없이 본문만 있습니다. 수정은 이 파일에 하고 `index.html`을 다시 생성합니다. |
 | `*.jpg`, `*.png` | 페이지에 삽입된 사진 원본. HTML에는 base64로 들어가 있어 이 파일들이 없어도 페이지는 동작합니다. |
+| `og.jpg` | 링크 미리보기용 1200×630 이미지. `index.html`의 `og:image`가 가리킵니다. |
 | `SESSION-LOG.md` | 2026-09-10 세션에서 수정한 내용 기록. |
 
 두 HTML의 내용은 같습니다. `index.html`은 `artifact-source.html`에 doctype·charset·viewport·기본 리셋만 씌운 것입니다.

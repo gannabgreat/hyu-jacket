@@ -15,7 +15,10 @@ CLOUDFLARE_ACCOUNT_ID=f2a11d44ffa14685ff1a313152882251
 export CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
 
 OUT="$(mktemp -d)"
+# index.html carries every photo as base64, but the link-preview image and the
+# bare photo URLs have to be real files on the site, so they ship too.
 cp index.html "$OUT/index.html"
+cp -- *.jpg *.png "$OUT/"
 npx -y wrangler@latest pages deploy "$OUT" \
   --project-name hyu-jacket --branch main --commit-dirty=true
 rm -rf "$OUT"
