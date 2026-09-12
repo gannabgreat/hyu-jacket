@@ -1,7 +1,8 @@
 /**
  * HANYANG VARSITY JACKET — order intake
  *
- * Receives one order per POST from https://gannabgreat.github.io/hyu-jacket/
+ * Receives one order per POST from https://hyu-jacket.pages.dev/
+ * (the github.io and netlify.app copies of the page post here too).
  * and writes it to the bound spreadsheet. Nothing here ever reads data back
  * out: there is no doGet, so the deployment URL cannot be used to dump the
  * sheet. Keep the spreadsheet itself private (do NOT turn on link sharing) —
