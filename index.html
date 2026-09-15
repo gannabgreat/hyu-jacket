@@ -293,6 +293,18 @@ h1 em{font-style:normal;color:var(--chain);display:block}
 .hoody-form .btn{white-space:nowrap}
 .hoody-note{font-family:var(--f-mono);font-size:11.5px;color:var(--on-navy-2);margin-top:10px;line-height:1.6}
 .hoody-status{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.04em;color:var(--chain-bright);min-height:18px;margin-top:10px}
+.promo .modal-card{max-width:380px;max-height:min(88vh,720px);padding:0;gap:0;overflow:hidden;position:relative}
+.promo-close{position:absolute;top:8px;right:8px;z-index:2;width:34px;height:34px;line-height:1;
+  font-family:var(--f-mono);font-size:19px;font-weight:700;color:#fff;background:rgba(10,12,24,.55);
+  border:0;border-radius:999px;cursor:pointer}
+.promo-close:hover{background:var(--ink)}
+.promo-shot{display:block;width:100%;height:clamp(180px,40vh,380px);object-fit:cover;object-position:center 30%;background:#fff}
+.promo-body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:12px}
+.promo-body h3{font-family:var(--f-display);font-size:28px;font-weight:900;line-height:.95;text-transform:uppercase;color:var(--ink)}
+.promo-body p{font-size:14px;line-height:1.6;color:var(--ink-2)}
+.promo-actions{display:flex;flex-direction:column;gap:12px}
+.promo-mute{display:flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.04em;color:var(--ink-3);cursor:pointer}
+.promo-mute input{width:15px;height:15px;accent-color:var(--chain);cursor:pointer}
 .size-chart{margin:18px 0 0;border:1px solid var(--rib);background:#FFFFFF;padding:10px 10px 8px}
 .size-chart img{display:block;width:100%;height:auto}
 .size-chart figcaption{font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#7A83A0;padding-top:8px}
@@ -758,6 +770,21 @@ footer .mark{color:var(--on-navy)}
 
   <div class="rib-rule"></div>
 
+
+  <div class="modal promo" id="hoodyPromo" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+      <button class="promo-close" type="button" id="promoClose" aria-label="Close">&times;</button>
+      <img class="promo-shot" src="hoody-black.jpg" alt="Black HYU hoody, white arch print" width="674" height="1200" loading="lazy">
+      <div class="promo-body">
+        <h3 id="promoTitle">HYU hoody<br>out now</h3>
+        <p>Black and grey, same HYU arch. Leave your email and you hear first when it opens.</p>
+        <div class="promo-actions">
+          <button class="btn btn--gold" type="button" id="promoGo">Take a look</button>
+          <label class="promo-mute"><input type="checkbox" id="promoMute"> Don't show this again today</label>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="modal" id="sentModal" hidden>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="sentTitle">
@@ -1395,6 +1422,54 @@ footer .mark{color:var(--on-navy)}
       })
       .then(function(){ btn.disabled = false; });
   });
+})();
+</script>
+<script>
+/* ---------- hoody popup: once per visit, muted for a day on request ---------- */
+(function(){
+  "use strict";
+  var KEY = "hyu-hoody-promo-until";
+  var DAY = 24 * 60 * 60 * 1000;
+
+  var box = document.getElementById("hoodyPromo");
+  var closeBtn = document.getElementById("promoClose");
+  var goBtn = document.getElementById("promoGo");
+  var mute = document.getElementById("promoMute");
+  if (!box) return;
+
+  function muted(){
+    try {
+      var until = Number(localStorage.getItem(KEY) || 0);
+      return until > Date.now();
+    } catch (e) { return false; }   /* private mode: just show it */
+  }
+
+  function close(){
+    if (mute.checked) {
+      try { localStorage.setItem(KEY, String(Date.now() + DAY)); } catch (e) {}
+    }
+    box.hidden = true;
+    document.removeEventListener("keydown", onKey);
+  }
+
+  function onKey(e){ if (e.key === "Escape") close(); }
+
+  closeBtn.addEventListener("click", close);
+  box.addEventListener("click", function(e){ if (e.target === box) close(); });
+  goBtn.addEventListener("click", function(){
+    close();
+    var section = document.getElementById("hoody");
+    if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  if (!muted()) {
+    /* a beat after the page paints, so it doesn't fight the first render */
+    setTimeout(function(){
+      box.hidden = false;
+      document.addEventListener("keydown", onKey);
+      closeBtn.focus();
+    }, 900);
+  }
 })();
 </script>
 </body>
