@@ -1452,3 +1452,14 @@ footer .mark{color:var(--on-navy)}
   }
 })();
 </script>
+<script>
+/* ---------- always open at the top, unless the link points at a section ---------- */
+(function(){
+  "use strict";
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  function toTop(){ if (!location.hash) window.scrollTo(0, 0); }
+  toTop();
+  window.addEventListener("load", toTop);
+  window.addEventListener("pageshow", function(e){ if (e.persisted) toTop(); });
+})();
+</script>

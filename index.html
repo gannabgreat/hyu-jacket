@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>:root{color-scheme:light}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>document.documentElement.setAttribute("data-theme","light");</script>
+<script>document.documentElement.setAttribute("data-theme","light");
+/* open at the top: browsers otherwise restore the last scroll position */
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";</script>
 <title>Hanyang Varsity Jacket</title>
 <meta name="description" content="Hanyang campus jacket, one group order for international students — your own sleeve text and flag included. ₩60,000–70,000, not fixed yet: more people join, cheaper the price. Student-run, not an official Hanyang University product.">
 <link rel="canonical" href="https://hyu-jacket.pages.dev/">
@@ -1474,6 +1476,17 @@ footer .mark{color:var(--on-navy)}
       closeBtn.focus();
     }, 900);
   }
+})();
+</script>
+<script>
+/* ---------- always open at the top, unless the link points at a section ---------- */
+(function(){
+  "use strict";
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  function toTop(){ if (!location.hash) window.scrollTo(0, 0); }
+  toTop();
+  window.addEventListener("load", toTop);
+  window.addEventListener("pageshow", function(e){ if (e.persisted) toTop(); });
 })();
 </script>
 </body>
