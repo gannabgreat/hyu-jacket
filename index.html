@@ -278,6 +278,21 @@ h1 em{font-style:normal;color:var(--chain);display:block}
 .fit-table td[data-s=""]{background:var(--surface-2)}
 .fit-note{font-size:12.5px;color:var(--ink-3);margin-top:10px;font-family:var(--f-mono)}
 .fit-note--warn{color:var(--alert)}
+.hoody{background:var(--navy-deep);color:var(--on-navy)}
+.hoody .eyebrow{color:var(--chain-bright)}
+.hoody .sec-title{color:var(--on-navy)}
+.hoody-lead{margin-top:14px;max-width:52ch;color:var(--on-navy-2);font-size:15px;line-height:1.7}
+.hoody-shots{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+@media (max-width:620px){.hoody-shots{grid-template-columns:1fr}}
+.hoody-shots figure{margin:0;background:#fff;border:1px solid rgba(255,255,255,.18)}
+.hoody-shots img{display:block;width:100%;height:auto}
+.hoody-shots figcaption{font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);padding:8px 10px;background:#fff}
+.hoody-form{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:26px}
+.hoody-form label{flex-basis:100%;font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--chain-bright)}
+.hoody-form input{flex:1 1 260px;font:inherit;font-size:15px;padding:13px 14px;border:1px solid var(--rib);background:var(--surface);color:var(--ink)}
+.hoody-form .btn{white-space:nowrap}
+.hoody-note{font-family:var(--f-mono);font-size:11.5px;color:var(--on-navy-2);margin-top:10px;line-height:1.6}
+.hoody-status{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.04em;color:var(--chain-bright);min-height:18px;margin-top:10px}
 .size-chart{margin:18px 0 0;border:1px solid var(--rib);background:#FFFFFF;padding:10px 10px 8px}
 .size-chart img{display:block;width:100%;height:auto}
 .size-chart figcaption{font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#7A83A0;padding-top:8px}
@@ -753,6 +768,35 @@ footer .mark{color:var(--on-navy)}
       <button class="btn btn--gold" type="button" id="sentClose">Close</button>
     </div>
   </div>
+
+  <div class="rib-rule"></div>
+
+  <!-- hoody teaser -->
+  <section class="band wrap hoody" id="hoody">
+    <span class="eyebrow">Next drop</span>
+    <h2 class="sec-title">HYU hoody<br>out now</h2>
+    <p class="hoody-lead">The same HYU arch on a heavyweight hoody, in black and in grey. Leave your email and you will be the first to hear when it opens — no other mail, and nothing else is recorded.</p>
+
+    <div class="hoody-shots">
+      <figure>
+        <img src="hoody-black.jpg" alt="Black HYU hoody, white arch print" loading="lazy" width="674" height="1200">
+        <figcaption>Black</figcaption>
+      </figure>
+      <figure>
+        <img src="hoody-grey.jpg" alt="Grey HYU hoody, blue arch print" loading="lazy" width="674" height="1200">
+        <figcaption>Grey</figcaption>
+      </figure>
+    </div>
+
+    <form class="hoody-form" id="hoodyForm" novalidate>
+      <label for="hoodyEmail">Want one? Leave your email</label>
+      <input type="email" id="hoodyEmail" inputmode="email" autocomplete="email" placeholder="you@example.com" maxlength="120">
+      <button class="btn btn--gold" type="submit" id="hoodyBtn">Keep me posted</button>
+    </form>
+    <p class="hoody-status" id="hoodyStatus"></p>
+    <p class="hoody-note">Your address is kept on a separate list from the jacket order and is used only to tell you when the hoody opens.</p>
+  </section>
+
   <!-- faq -->
   <section class="band wrap band--tint">
     <span class="eyebrow">Questions</span>
@@ -1308,6 +1352,48 @@ footer .mark{color:var(--on-navy)}
         window.prompt("Copy this link:", url);
       }
     });
+  });
+})();
+</script>
+<script>
+/* ---------- hoody waiting list: email only, its own tab in the sheet ---------- */
+(function(){
+  "use strict";
+  var ENDPOINT = "https://script.google.com/macros/s/AKfycbyYsopJ2OFTShYD48pnUXFDeTLia7CG_zxP7gcKn2MtdM_e_6meEViQL-WrzCMecFxh/exec";
+  var TOKEN = "hyu-jacket-2026";
+  var EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  var form = document.getElementById("hoodyForm");
+  var field = document.getElementById("hoodyEmail");
+  var btn = document.getElementById("hoodyBtn");
+  var status = document.getElementById("hoodyStatus");
+  if (!form) return;
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var email = (field.value || "").trim();
+    if (!EMAIL_OK.test(email)) { status.textContent = "Please enter a valid email."; field.focus(); return; }
+
+    btn.disabled = true;
+    status.textContent = "Sending…";
+    /* text/plain keeps it a simple request, same as the order form above */
+    fetch(ENDPOINT, {
+      method: "POST",
+      body: JSON.stringify({ token: TOKEN, list: "hoody", email: email, page: location.href }),
+      headers: { "Content-Type": "text/plain;charset=utf-8" }
+    })
+      .then(function(r){ return r.text(); })
+      .then(function(t){
+        var j = null;
+        try { j = JSON.parse(t); } catch (err) {}
+        if (j && j.ok === false) throw new Error(j.error || "error");
+        status.textContent = (j && j.duplicate) ? "You are already on the list." : "On the list. We'll write when it opens.";
+        form.reset();
+      })
+      .catch(function(){
+        status.textContent = "That didn't send. Mail wpalskdl03@gmail.com and we'll add you.";
+      })
+      .then(function(){ btn.disabled = false; });
   });
 })();
 </script>

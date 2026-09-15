@@ -28,6 +28,10 @@ var HEADERS = ['접수시각', 'id', '이니셜', '국기코드', '국가', '사
                '이메일', '한국계좌', '결제수단', '질문', '개인정보동의', '동의시각',
                '유입페이지', '수정횟수'];
 
+// The hoody is a separate interest list: email only, its own tab.
+var HOODY_SHEET  = 'hoody';
+var HOODY_HEADERS = ['접수시각', '이메일', '유입페이지'];
+
 function doGet() {
   // No read path on purpose.
   return ContentService
@@ -41,6 +45,7 @@ function doPost(e) {
 
     if (body.token !== TOKEN) return json({ ok: false, error: 'bad token' });
     if (body.website) return json({ ok: true });                 // honeypot: swallow silently
+    if (body.list === 'hoody') return hoodySignup(body);         // email-only waiting list
     // Consent is the legal basis for holding these entries: no consent, no row.
     if (!body.consent) return json({ ok: false, error: 'consent required' });
     var id = clean(body.id);
@@ -90,6 +95,39 @@ function doPost(e) {
     }
   } catch (err) {
     return json({ ok: false, error: String(err) });
+  }
+}
+
+// Email-only sign-ups for the hoody. One row per address, no consent box:
+// the page asks for nothing but the address and says what it is used for.
+function hoodySignup(body) {
+  var email = String(body.email || '');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ ok: false, error: 'bad email' });
+
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(15000)) return json({ ok: false, error: 'busy' });
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName(HOODY_SHEET) || ss.insertSheet(HOODY_SHEET);
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(HOODY_HEADERS);
+      sheet.getRange(1, 1, 1, HOODY_HEADERS.length).setFontWeight('bold');
+      sheet.setFrozenRows(1);
+    }
+    var last = sheet.getLastRow();
+    if (last > 1) {
+      var seen = sheet.getRange(2, 2, last - 1, 1).getValues();
+      for (var i = 0; i < seen.length; i++) {
+        // already on the list: say yes without writing the address twice
+        if (String(seen[i][0]).toLowerCase() === email.toLowerCase()) {
+          return json({ ok: true, duplicate: true });
+        }
+      }
+    }
+    sheet.appendRow([new Date(), clean(email), clean(body.page)]);
+    return json({ ok: true });
+  } finally {
+    lock.releaseLock();
   }
 }
 
