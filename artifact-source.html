@@ -644,7 +644,7 @@ footer .mark{color:var(--on-navy)}
             <div class="field">
               <label for="jCountry">Country flag<b class="req">*</b></label>
               <select id="jCountry"></select>
-              <p class="flag-notice" id="jFlagNote">No flag has reached <b>8 people</b> yet, so each patch has to be made on its own — a flag costs <b>+&#8361;3,000</b>. Leave it on <b>No flag</b> and you pay nothing extra.</p>
+              <p class="flag-notice" id="jFlagNote">Each patch has to be made on its own — a flag costs <b>+&#8361;3,000</b>. Leave it on <b>No flag</b> and you pay nothing extra.</p>
             </div>
             <div class="field">
               <label for="jSize">Size<b class="req">*</b></label>
@@ -1124,7 +1124,7 @@ footer .mark{color:var(--on-navy)}
       initials: f.initials, country: f.country,
       countryName: f.country === "ZZ" ? f.other : c[2], flag: c[1],
       consent: f.consent ? "동의" : "", consentTs: new Date().toISOString(),
-      size: f.size, email: f.email, krBank: "", payMethod: f.pay, delivery: f.delivery,
+      size: f.size, email: f.email, payMethod: f.pay, delivery: f.delivery,
       question: f.question,
       page: location.href, token: SHARED_TOKEN
     };
@@ -1147,7 +1147,7 @@ footer .mark{color:var(--on-navy)}
   function saveToArtifact(f){
     if (!artifactCol) return Promise.resolve("skipped");
     var c = byCode[f.country];
-    return artifactCol.doc(f.entryId || idv).set({ country: f.country, other: f.other, consent: f.consent, flag: c[1], size: f.size, email: f.email, krBank: f.bank, payMethod: f.pay, question: f.question, ts: Date.now() })
+    return artifactCol.doc(f.entryId || idv).set({ country: f.country, other: f.other, consent: f.consent, flag: c[1], size: f.size, email: f.email, payMethod: f.pay, delivery: f.delivery, question: f.question, ts: Date.now() })
       .then(function(){ return "sent"; });
   }
 

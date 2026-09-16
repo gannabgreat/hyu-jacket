@@ -19,14 +19,16 @@ var TOKEN = 'hyu-jacket-2026';
 // The spreadsheet this writes to. Addressed by id rather than
 // getActiveSpreadsheet() so the script works standalone as well as bound.
 var SHEET_ID     = '1Pv1dVRG_HAVH3epj4tRk_AdW1c7rGU5Oz1oo5OiIH-4';
-var SHEET_NAME   = 'orders';
+// New sheet from 2026-09-16: the old 'orders' tab keeps the entries taken
+// while this was an interest check, on the old columns. Nothing writes there now.
+var SHEET_NAME   = 'orders2';
 var PER_ID_MS    = 20 * 1000;  // same browser: one write per 20s
 var FLOOD_MAX    = 20;         // everyone together: max writes per minute
 var MAX_LEN      = 300;        // per field, question gets 4x
 
 var HEADERS = ['접수시각', 'id', '이니셜', '국기코드', '국가', '사이즈',
-               '이메일', '한국계좌', '결제수단', '질문', '개인정보동의', '동의시각',
-               '유입페이지', '배송', '수정횟수'];
+               '이메일', '결제수단', '배송', '질문', '개인정보동의', '동의시각',
+               '유입페이지', '수정횟수'];
 
 // The hoody is a separate interest list: email only, its own tab.
 var HOODY_SHEET  = 'hoody';
@@ -71,9 +73,9 @@ function doPost(e) {
       var row = [
         new Date(), id,
         clean(body.initials), clean(body.flag), clean(body.countryName), clean(body.size),
-        clean(body.email), clean(body.krBank), clean(body.payMethod),
+        clean(body.email), clean(body.payMethod), clean(body.delivery),
         clean(body.question, MAX_LEN * 4), clean(body.consent), clean(body.consentTs),
-        clean(body.page), clean(body.delivery), 0
+        clean(body.page), 0
       ];
 
       var at = findRow(sheet, id);
@@ -170,8 +172,8 @@ function confirmToApplicant(row) {
     '  Size        : ' + (row[5] || '-'),
     '  Flag        : ' + (row[4] || '-'),
     '  Sleeve text : ' + (row[2] || '(none)'),
-    '  Pay via     : ' + (row[8] || '-'),
-    '  Delivery    : ' + (row[13] === 'delivery' ? 'to your address (+5,000 KRW)' : 'campus pick-up (included)'),
+    '  Pay via     : ' + (row[7] || '-'),
+    '  Delivery    : ' + (row[8] === 'delivery' ? 'to your address (+5,000 KRW)' : 'campus pick-up (included)'),
     '',
     'What it costs',
     '  Jacket      : 65,000 KRW',
