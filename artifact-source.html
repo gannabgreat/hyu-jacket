@@ -480,7 +480,7 @@ footer .mark{color:var(--on-navy)}
         <div class="price-anchor">
           <span class="big"><span class="cur">&#8361;</span>65,000</span>
           <span class="unit">per jacket</span>
-          <span class="unit unit--extra">Flag patch +&#8361;3,000 &middot; delivery +&#8361;5,000</span>
+          <span class="unit unit--extra">Flag patch +&#8361;3,000 &middot; 4XL +&#8361;5,000 / 5XL +&#8361;10,000 &middot; delivery +&#8361;5,000</span>
         </div>
         <p class="price-pitch"><span class="en">Campus pick-up<em>is included.</em></span></p>
 
@@ -662,8 +662,8 @@ footer .mark{color:var(--on-navy)}
                 <option value="XL">XL (105)</option>
                 <option value="2XL">2XL (110)</option>
                 <option value="3XL">3XL (115)</option>
-                <option value="4XL">4XL (120) · +fee</option>
-                <option value="5XL">5XL (125) · +fee</option>
+                <option value="4XL">4XL (120) · +&#8361;5,000</option>
+                <option value="5XL">5XL (125) · +&#8361;10,000</option>
               </select>
             </div>
           </div>
@@ -714,6 +714,7 @@ footer .mark{color:var(--on-navy)}
           </div>
           <div class="pay-total" id="jTotalBox">
             <div class="pay-row"><span>Jacket</span><b>&#8361;65,000</b></div>
+            <div class="pay-row" id="jRowSize" hidden><span id="jSizeLabel">Large size</span><b id="jSizeCost">+&#8361;5,000</b></div>
             <div class="pay-row" id="jRowFlag" hidden><span>Flag patch</span><b>+&#8361;3,000</b></div>
             <div class="pay-row"><span id="jShipLabel">Campus pick-up</span><b id="jShipCost">&#8361;0</b></div>
             <div class="pay-row pay-row--sum"><span>Total</span><b id="jTotalValue">&#8361;65,000</b></div>
@@ -845,7 +846,7 @@ footer .mark{color:var(--on-navy)}
       </details>
       <details>
         <summary><span class="q">Q6</span>What exactly do I pay?</summary>
-        <p class="a">&#8361;65,000 for the jacket. A flag patch on the sleeve is +&#8361;3,000, and it is only produced when 8 or more people choose that flag. Picking the jacket up on campus is included; having it delivered to your address instead is +&#8361;5,000. Sleeve text costs nothing.</p>
+        <p class="a">&#8361;65,000 for the jacket, up to 3XL. 4XL is +&#8361;5,000 and 5XL is +&#8361;10,000, because they take more fabric. A flag patch on the sleeve is +&#8361;3,000, and it is only produced when 8 or more people choose that flag. Picking the jacket up on campus is included; having it delivered to your address instead is +&#8361;5,000. Sleeve text costs nothing.</p>
       </details>
       <details>
         <summary><span class="q">Q7</span>Can I change my size, or cancel?</summary>
@@ -932,18 +933,28 @@ footer .mark{color:var(--on-navy)}
 
   /* ---------- running total: the price of what is selected right now ---------- */
   var BASE_PRICE = 65000, FLAG_FEE = 3000, SHIP_FEE = 5000;
+  /* the two biggest sizes need more fabric, so the factory charges more for them */
+  var SIZE_FEES = { "4XL": 5000, "5XL": 10000 };
   function won(n){ return "\u20A9" + n.toLocaleString("en-US"); }
   function updateTotal(){
     var c = $("jCountry").value;
     /* "no flag" and "nothing picked yet" both cost nothing extra */
     var flagOn = !!c && c !== "NONE";
     var ship = $("jDelivery").value === "delivery";
+    var size = $("jSize").value;
+    var sizeFee = SIZE_FEES[size] || 0;
+    $("jRowSize").hidden = !sizeFee;
+    if (sizeFee) {
+      $("jSizeLabel").textContent = size + " " + tr("size");
+      $("jSizeCost").textContent = "+" + won(sizeFee);
+    }
     $("jRowFlag").hidden = !flagOn;
     $("jShipLabel").textContent = ship ? tr("Delivery to my address") : tr("Campus pick-up");
     $("jShipCost").textContent = ship ? "+" + won(SHIP_FEE) : won(0);
-    $("jTotalValue").textContent = won(BASE_PRICE + (flagOn ? FLAG_FEE : 0) + (ship ? SHIP_FEE : 0));
+    $("jTotalValue").textContent = won(BASE_PRICE + sizeFee + (flagOn ? FLAG_FEE : 0) + (ship ? SHIP_FEE : 0));
   }
   $("jDelivery").addEventListener("change", updateTotal);
+  $("jSize").addEventListener("change", updateTotal);
   updateTotal();
   /* Deliberately stricter than RFC 5322: the organizer has to be able to actually
      mail these people. Rejects non-ASCII local parts, doubled dots and bare TLDs. */

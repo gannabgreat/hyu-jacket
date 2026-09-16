@@ -34,6 +34,8 @@ var HEADERS = ['접수시각', 'id', '이니셜', '국기코드', '국가', '사
 var BASE_PRICE = 65000;
 var FLAG_FEE   = 3000;   // only when a flag is actually chosen
 var SHIP_FEE   = 5000;   // only when they want it delivered
+// The two biggest sizes take more fabric and the factory charges for it.
+var SIZE_FEES  = { '4XL': 5000, '5XL': 10000 };
 
 // Where the money goes. Sent to each applicant in the receipt mail, not on the page.
 var BANK_NAME   = 'KB Kookmin Bank';
@@ -41,10 +43,11 @@ var BANK_CODE   = '004';
 var BANK_ACCOUNT = '94160201367661';
 var BANK_HOLDER = '안현서 (Ahn Hyunseo)';
 
-function orderTotal(countryCode, delivery) {
+function orderTotal(countryCode, delivery, size) {
   var flag = countryCode && countryCode !== 'NONE' ? FLAG_FEE : 0;
   var ship = delivery === 'delivery' ? SHIP_FEE : 0;
-  return { flag: flag, ship: ship, total: BASE_PRICE + flag + ship };
+  var big  = SIZE_FEES[String(size || '').toUpperCase()] || 0;
+  return { flag: flag, ship: ship, size: big, total: BASE_PRICE + flag + ship + big };
 }
 
 function won(n) {
@@ -91,7 +94,7 @@ function doPost(e) {
       cache.put('rl_' + id, '1', Math.ceil(PER_ID_MS / 1000));
 
       var sheet = getSheet();
-      var cost = orderTotal(clean(body.country), clean(body.delivery));
+      var cost = orderTotal(clean(body.country), clean(body.delivery), clean(body.size));
       var row = [
         new Date(), id,
         clean(body.initials), clean(body.flag), clean(body.countryName), clean(body.size),
@@ -200,6 +203,7 @@ function confirmToApplicant(row, cost) {
     '',
     'What you pay',
     '  Jacket      : ' + won(BASE_PRICE),
+    '  Size        : ' + (cost.size ? row[5] + ', +' + won(cost.size) + ' (more fabric)' : 'no extra charge'),
     '  Flag patch  : ' + (cost.flag ? '+' + won(cost.flag) : 'none'),
     '  Delivery    : ' + (cost.ship ? '+' + won(cost.ship) : 'campus pick-up, included'),
     '  ---------------------------------',
