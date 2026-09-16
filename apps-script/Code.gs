@@ -40,6 +40,7 @@ var SIZE_FEES  = { '4XL': 5000, '5XL': 10000 };
 // Where the money goes. Sent to each applicant in the receipt mail, not on the page.
 var BANK_NAME   = 'KB Kookmin Bank';
 var BANK_CODE   = '004';
+var BANK_SWIFT  = 'CZNBKRSE';   // for transfers sent from outside Korea
 var BANK_ACCOUNT = '94160201367661';
 var BANK_HOLDER = '안현서 (Ahn Hyunseo)';
 
@@ -211,6 +212,7 @@ function confirmToApplicant(row, cost) {
     '',
     'How to pay',
     '  Bank        : ' + BANK_NAME + ' (bank code ' + BANK_CODE + ')',
+    '  SWIFT/BIC   : ' + BANK_SWIFT + '  (only needed from outside Korea)',
     '  Account     : ' + BANK_ACCOUNT,
     '  Account name: ' + BANK_HOLDER,
     '  Amount      : ' + won(cost.total),
@@ -218,8 +220,8 @@ function confirmToApplicant(row, cost) {
     'Please send it under your own name, or reply to this mail with the name you',
     'transferred under, so we can match your payment to your order.',
     '',
-    'Prefer cash? Bring it to us in person in front of the International Building',
-    '(국제관), Wednesday to Friday during lunch time.',
+    'Prefer cash? Write to us first so we can arrange it, then hand it over in front',
+    'of the International Building (국제관), Wednesday to Friday during lunch time.',
     '',
     'A flag patch is only produced when 8 or more people pick the same flag. If your',
     'flag does not reach 8, we will write to you before anything is charged.',
