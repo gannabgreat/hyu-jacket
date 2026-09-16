@@ -32,8 +32,8 @@ var HEADERS = ['접수시각', 'id', '이니셜', '국기코드', '국가', '사
 
 // What an order costs. The page shows the same numbers; keep them in step.
 var BASE_PRICE = 65000;
-var FLAG_FEE   = 3000;   // only when a flag is actually chosen
-var SHIP_FEE   = 5000;   // only when they want it delivered
+var FLAG_FEE   = 5000;   // only when a flag is actually chosen
+var SHIP_FEE   = 3000;   // only when they want it delivered
 // The two biggest sizes take more fabric and the factory charges for it.
 var SIZE_FEES  = { '4XL': 5000, '5XL': 10000 };
 
