@@ -114,7 +114,7 @@ function doPost(e) {
         updated = true;
       } else {
         sheet.appendRow(row);
-        confirmToApplicant(row, cost);
+        confirmToApplicant(row, cost, clean(body.lang));
       }
 
       return json({ ok: true, updated: updated });
@@ -182,64 +182,167 @@ function findRow(sheet, id) {
 
 // The only mail this script sends. No organizer copy: everything is in the
 // sheet, and one mail per entry keeps the 100/day consumer quota at 100 entries.
-// Receipt for the person who filled the form. English only on purpose: one
-// message goes out to two dozen first languages and English is the shared one.
-function confirmToApplicant(row, cost) {
-  var to = String(row[6] || '');
-  if (!to) return;
-  var delivered = row[8] === 'delivery';
-  var body = [
-    'Hi,',
+// Same shape as the mail the first batch of applicants got, so everyone reads
+// the same numbers. Chinese when the page was in Chinese, English otherwise.
+var PAY_DEADLINE    = 'Friday, 18 September';
+var PAY_DEADLINE_ZH = '9 月 18 日（周五）';
+var PAY_DEADLINE_TW = '9 月 18 日（週五）';
+
+function money(n) { return won(n); }
+
+function receiptEn(row, cost, delivered) {
+  var lines = [
+    'Hi' + (row[2] ? ' ' + row[2] : '') + ',',
     '',
-    'Thanks for joining the Hanyang varsity jacket group order.',
+    'Thanks for joining the Hanyang varsity jacket group order - your order is recorded.',
     '',
-    'Your order is recorded.',
+    '  Jacket          : 65,000 KRW',
+    '  Flag patch      : +5,000 KRW   (no country reached 8 people, so every patch has',
+    '                    to be made on its own :( )',
+    '  4XL / 5XL       : +5,000 / +10,000 KRW  (they take more fabric)',
+    '  Campus pick-up  : included',
+    '  Delivery        : +3,000 KRW',
     '',
-    'What we have for you',
+    'What you signed up for',
     '  Size        : ' + (row[5] || '-'),
-    '  Flag        : ' + (row[4] || '-'),
+    '  Flag        : ' + (row[4] || 'no flag'),
     '  Sleeve text : ' + (row[2] || '(none)'),
-    '  Pay via     : ' + (row[7] || '-'),
-    '  Delivery    : ' + (delivered ? 'to your address' : 'campus pick-up'),
+    '  Getting it  : ' + (delivered ? 'delivery to your address' : 'campus pick-up'),
     '',
     'What you pay',
-    '  Jacket      : ' + won(BASE_PRICE),
-    '  Size        : ' + (cost.size ? row[5] + ', +' + won(cost.size) + ' (more fabric)' : 'no extra charge'),
-    '  Flag patch  : ' + (cost.flag ? '+' + won(cost.flag) : 'none'),
-    '  Delivery    : ' + (cost.ship ? '+' + won(cost.ship) : 'campus pick-up, included'),
+    '  Jacket      : ' + money(BASE_PRICE),
+    '  Size        : ' + (cost.size ? row[5] + ', +' + money(cost.size) : 'no extra charge'),
+    '  Flag patch  : ' + (cost.flag ? '+' + money(cost.flag) : 'none'),
+    '  Delivery    : ' + (cost.ship ? '+' + money(cost.ship) : 'campus pick-up, included'),
     '  ---------------------------------',
-    '  TOTAL       : ' + won(cost.total),
+    '  TOTAL       : ' + money(cost.total),
     '',
-    'How to pay',
+    'How to pay (by ' + PAY_DEADLINE + ' please)',
     '  Bank        : ' + BANK_NAME + ' (bank code ' + BANK_CODE + ')',
     '  SWIFT/BIC   : ' + BANK_SWIFT + '  (only needed from outside Korea)',
     '  Account     : ' + BANK_ACCOUNT,
     '  Account name: ' + BANK_HOLDER,
-    '  Amount      : ' + won(cost.total),
+    '  Amount      : ' + money(cost.total),
     '',
-    'Please send it under your own name, or reply to this mail with the name you',
-    'transferred under, so we can match your payment to your order.',
+    'Please send it under your own name, or reply with the name you transferred under.',
     '',
-    'Prefer cash? Write to us first so we can arrange it, then hand it over in front',
-    'of the International Building (국제관), Wednesday to Friday during lunch time.',
+    'Prefer cash? Write to us first so we can arrange it.',
     '',
-    'A flag patch is only produced when 8 or more people pick the same flag. If your',
-    'flag does not reach 8, we will write to you before anything is charged.',
+    'Our page (the only one that is up to date): https://hyu-jacket.pages.dev',
+    'Share it with friends who want to take a piece of Hanyang home with them!',
     '',
     'Any question, just reply to this mail.',
     '',
-    'Our page (the only one that is up to date): https://hyu-jacket.pages.dev',
-    '',
     'Hanyang Varsity Jacket group order',
     'wpalskdl03@gmail.com'
-  ].join('\n');
+  ];
+  return lines.join('\n');
+}
+
+function receiptZh(row, cost, delivered, trad) {
+  var W = trad ? '韓元' : '韩元';
+  function amt(n) { return money(n).replace(' KRW', ' ' + W); }
+  var CN = trad ? { 'China': '中國', 'Taiwan': '台灣', 'Korea': '韓國' }
+                : { 'China': '中国', 'Taiwan': '台湾', 'Korea': '韩国' };
+  var flag = row[4] ? (CN[row[4]] || row[4]) : '';
+  var t = trad ? {
+    hi: '你好', lead: '感謝你參加漢陽大學棒球外套團購，你的訂單已登記。',
+    jacket: '外套', flagRow: '國旗貼布', big: '4XL / 5XL', pickup: '校內領取', deliver: '快遞配送',
+    free: '免費', flagNote: '（沒有任何國家達到 8 人，每塊貼布都要單獨製作 :( ）', fabric: '（用料更多）',
+    signed: '你的申請內容', sz: '尺碼', fl: '國旗', sleeve: '袖子文字', get: '領取方式',
+    getPick: '校內領取', getDeliver: '快遞配送到你的地址', noflag: '不要國旗', none: '（無）',
+    pay: '你需要支付', sizeRow: '尺碼追加', noExtra: '無追加費用', nothing: '無',
+    included: '校內領取，已包含', total: '合計',
+    how: '付款方式（請在 ' + PAY_DEADLINE_TW + ' 前完成）',
+    bank: '銀行', bankName: 'KB 國民銀行（銀行代碼 004）', swiftNote: '（僅境外匯款需要）',
+    acc: '帳號', holder: '戶名', amount: '金額',
+    name: '請用你本人的名字轉帳，或回信告訴我們匯款人姓名。',
+    cash: '想用現金支付？請先聯絡我們安排。',
+    site: '我們的網站（只有這個是最新的）：https://hyu-jacket.pages.dev',
+    share: '把這個網站分享給想把漢陽帶回家的朋友吧！',
+    ask: '有任何問題，直接回覆這封郵件即可。', sign: '漢陽大學棒球外套團購'
+  } : {
+    hi: '你好', lead: '感谢你参加汉阳大学棒球外套团购，你的订单已登记。',
+    jacket: '外套', flagRow: '国旗贴布', big: '4XL / 5XL', pickup: '校内领取', deliver: '快递配送',
+    free: '免费', flagNote: '（没有任何国家达到 8 人，每块贴布都要单独制作 :( ）', fabric: '（用料更多）',
+    signed: '你的申请内容', sz: '尺码', fl: '国旗', sleeve: '袖子文字', get: '领取方式',
+    getPick: '校内领取', getDeliver: '快递配送到你的地址', noflag: '不要国旗', none: '（无）',
+    pay: '你需要支付', sizeRow: '尺码追加', noExtra: '无追加费用', nothing: '无',
+    included: '校内领取，已包含', total: '合计',
+    how: '付款方式（请在 ' + PAY_DEADLINE_ZH + ' 前完成）',
+    bank: '银行', bankName: 'KB 国民银行（银行代码 004）', swiftNote: '（仅境外汇款需要）',
+    acc: '账号', holder: '户名', amount: '金额',
+    name: '请用你本人的名字转账，或回信告诉我们汇款人姓名。',
+    cash: '想用现金支付？请先联系我们安排。',
+    site: '我们的网站（只有这个是最新的）：https://hyu-jacket.pages.dev',
+    share: '把这个网站分享给想把汉阳带回家的朋友吧！',
+    ask: '有任何问题，直接回复这封邮件即可。', sign: '汉阳大学棒球外套团购'
+  };
+  var lines = [
+    t.hi + (row[2] ? ' ' + row[2] : '') + '，',
+    '',
+    t.lead,
+    '',
+    '  ' + t.jacket + '       : ' + amt(BASE_PRICE),
+    '  ' + t.flagRow + '   : +' + amt(FLAG_FEE) + ' ' + t.flagNote,
+    '  ' + t.big + '  : +5,000 / +10,000 ' + W + ' ' + t.fabric,
+    '  ' + t.pickup + '   : ' + t.free,
+    '  ' + t.deliver + '   : +' + amt(SHIP_FEE),
+    '',
+    t.signed,
+    '  ' + t.sz + '      : ' + (row[5] || '-'),
+    '  ' + t.fl + '      : ' + (flag || t.noflag),
+    '  ' + t.sleeve + '  : ' + (row[2] || t.none),
+    '  ' + t.get + '  : ' + (delivered ? t.getDeliver : t.getPick),
+    '',
+    t.pay,
+    '  ' + t.jacket + '      : ' + amt(BASE_PRICE),
+    '  ' + t.sizeRow + '  : ' + (cost.size ? row[5] + '，+' + amt(cost.size) : t.noExtra),
+    '  ' + t.flagRow + '  : ' + (cost.flag ? '+' + amt(cost.flag) : t.nothing),
+    '  ' + t.deliver + '  : ' + (cost.ship ? '+' + amt(cost.ship) : t.included),
+    '  ---------------------------------',
+    '  ' + t.total + '      : ' + amt(cost.total),
+    '',
+    t.how,
+    '  ' + t.bank + '      : ' + t.bankName,
+    '  SWIFT/BIC : ' + BANK_SWIFT + ' ' + t.swiftNote,
+    '  ' + t.acc + '      : ' + BANK_ACCOUNT,
+    '  ' + t.holder + '      : ' + BANK_HOLDER,
+    '  ' + t.amount + '      : ' + amt(cost.total),
+    '',
+    t.name,
+    '',
+    t.cash,
+    '',
+    t.site,
+    t.share,
+    '',
+    t.ask,
+    '',
+    t.sign,
+    'wpalskdl03@gmail.com'
+  ];
+  return lines.join('\n');
+}
+
+function confirmToApplicant(row, cost, lang) {
+  var to = String(row[6] || '');
+  if (!to) return;
+  var delivered = row[8] === 'delivery';
+  var code = String(lang || '').toLowerCase();
+  var subject, body;
+  if (code === 'zh-tw' || code === 'zh-hant') {
+    subject = '漢陽大學棒球外套團購 - 訂單已登記，這是你的金額';
+    body = receiptZh(row, cost, delivered, true);
+  } else if (code.indexOf('zh') === 0) {
+    subject = '汉阳大学棒球外套团购 - 订单已登记，这是你的金额';
+    body = receiptZh(row, cost, delivered, false);
+  } else {
+    subject = 'Hanyang varsity jacket - your order and how to pay';
+    body = receiptEn(row, cost, delivered);
+  }
   try {
-    MailApp.sendEmail({
-      to: to,
-      subject: 'Hanyang varsity jacket - your order and how to pay',
-      body: body,
-      name: 'Hanyang Varsity Jacket'
-    });
+    MailApp.sendEmail({ to: to, subject: subject, body: body, name: 'Hanyang Varsity Jacket' });
   } catch (err) {
     // Mail quota is not a reason to lose the row.
   }

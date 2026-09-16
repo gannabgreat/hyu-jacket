@@ -1167,7 +1167,9 @@ footer .mark{color:var(--on-navy)}
       consent: f.consent ? "동의" : "", consentTs: new Date().toISOString(),
       size: f.size, email: f.email, payMethod: f.pay, delivery: f.delivery,
       question: f.question,
-      page: location.href, token: SHARED_TOKEN
+      page: location.href, token: SHARED_TOKEN,
+      /* which language the page was in, so the receipt mail matches it */
+      lang: document.documentElement.getAttribute("data-lang") || document.documentElement.lang || "en"
     };
     // text/plain keeps it a "simple" request (no CORS preflight), which Apps Script web apps accept.
     return fetch(SHEET_ENDPOINT, { method: "POST", body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" } })
