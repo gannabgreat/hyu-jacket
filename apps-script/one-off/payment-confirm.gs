@@ -34,7 +34,9 @@ function paidRow(email) {
         return {
           tab: tabs[t], rowIndex: i + 1,
           sleeve: String(v[i][col('이니셜')] || ''),
-          flag: String(v[i][col('국가')] || ''),
+          // "No flag — 국기 없음" is a placeholder, not a country: blank it out so the
+          // Chinese mail says 不要国旗 instead of leaking Korean into it
+          flag: (function(x){ return /^No flag/.test(x) ? '' : x; })(String(v[i][col('국가')] || '')),
           size: String(v[i][col('사이즈')] || ''),
           delivery: col('배송') >= 0 ? String(v[i][col('배송')] || '') : '',
           total: col('합계') >= 0 ? Number(v[i][col('합계')]) || 0 : 0,
