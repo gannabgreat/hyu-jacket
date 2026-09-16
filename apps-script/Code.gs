@@ -162,9 +162,9 @@ function confirmToApplicant(row) {
   var body = [
     'Hi,',
     '',
-    'Thanks for taking part in the interest check for the Hanyang varsity jacket group order.',
+    'Thanks for joining the Hanyang varsity jacket group order.',
     '',
-    'Your entry is recorded.',
+    'Your order is recorded.',
     '',
     'What we have for you',
     '  Size        : ' + (row[5] || '-'),
@@ -172,8 +172,13 @@ function confirmToApplicant(row) {
     '  Sleeve text : ' + (row[2] || '(none)'),
     '  Korean bank : ' + (row[7] || '-'),
     '',
-    'This is an interest check, not a confirmed order. As soon as it is confirmed',
-    'we will contact you at this address with the payment and pick-up details.',
+    'What it costs',
+    '  Jacket      : 65,000 KRW',
+    '  Flag patch  : +3,000 KRW, and only produced when 8 or more people pick that flag',
+    '  Pick-up     : on campus, included',
+    '  Delivery    : +5,000 KRW if you want it sent to your address instead',
+    '',
+    'We will email you the payment details at this address as soon as the order closes.',
     '',
     'Hanyang Varsity Jacket group order',
     'wpalskdl03@gmail.com'
@@ -181,7 +186,7 @@ function confirmToApplicant(row) {
   try {
     MailApp.sendEmail({
       to: to,
-      subject: 'Hanyang varsity jacket - thanks for joining the interest check',
+      subject: 'Hanyang varsity jacket - your order is in',
       body: body,
       name: 'Hanyang Varsity Jacket'
     });
