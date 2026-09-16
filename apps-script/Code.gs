@@ -26,7 +26,7 @@ var MAX_LEN      = 300;        // per field, question gets 4x
 
 var HEADERS = ['접수시각', 'id', '이니셜', '국기코드', '국가', '사이즈',
                '이메일', '한국계좌', '결제수단', '질문', '개인정보동의', '동의시각',
-               '유입페이지', '수정횟수'];
+               '유입페이지', '배송', '수정횟수'];
 
 // The hoody is a separate interest list: email only, its own tab.
 var HOODY_SHEET  = 'hoody';
@@ -73,7 +73,7 @@ function doPost(e) {
         clean(body.initials), clean(body.flag), clean(body.countryName), clean(body.size),
         clean(body.email), clean(body.krBank), clean(body.payMethod),
         clean(body.question, MAX_LEN * 4), clean(body.consent), clean(body.consentTs),
-        clean(body.page), 0
+        clean(body.page), clean(body.delivery), 0
       ];
 
       var at = findRow(sheet, id);
@@ -170,7 +170,8 @@ function confirmToApplicant(row) {
     '  Size        : ' + (row[5] || '-'),
     '  Flag        : ' + (row[4] || '-'),
     '  Sleeve text : ' + (row[2] || '(none)'),
-    '  Korean bank : ' + (row[7] || '-'),
+    '  Pay via     : ' + (row[8] || '-'),
+    '  Delivery    : ' + (row[13] === 'delivery' ? 'to your address (+5,000 KRW)' : 'campus pick-up (included)'),
     '',
     'What it costs',
     '  Jacket      : 65,000 KRW',

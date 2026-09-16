@@ -642,9 +642,9 @@ footer .mark{color:var(--on-navy)}
           </div>
           <div class="two-up">
             <div class="field">
-              <label for="jCountry">Country<b class="req">*</b></label>
+              <label for="jCountry">Country flag<b class="req">*</b></label>
               <select id="jCountry"></select>
-              <p class="flag-notice" id="jFlagNote" hidden>Made only if <b>8+ people</b> choose this flag.<br>Below 8, your jacket can be made with the sleeve text only, <b>no flag</b>.</p>
+              <p class="flag-notice" id="jFlagNote">No flag has reached <b>8 people</b> yet, so each patch has to be made on its own — a flag costs <b>+&#8361;3,000</b>. Leave it on <b>No flag</b> and you pay nothing extra.</p>
             </div>
             <div class="field">
               <label for="jSize">Size<b class="req">*</b></label>
@@ -673,21 +673,20 @@ footer .mark{color:var(--on-navy)}
             <span class="hint">For payment details and pick-up notice</span>
             <p class="flag-notice" id="jEmailNote" hidden>That doesn't look like an email address. Please type it again, like <b>you@example.com</b></p>
           </div>
-          <div class="field">
-            <label for="jBank">Do you have a Korean bank account?<b class="req">*</b></label>
-            <select id="jBank">
-              <option value="">— select —</option>
-              <option value="yes">Yes — I have a Korean bank account</option>
-              <option value="no">No — I don't have one</option>
-              <option value="friend">No — but a friend with a Korean account can send it for me</option>
-            </select>
-            <span class="hint">We'll tell you how to pay either way</span>
-          </div>
-          <div class="field" id="jPayField" hidden>
-            <label for="jPay">Which payment method works best for you?<b class="req">*</b></label>
+          <div class="field" id="jPayField">
+            <label for="jPay">How would you like to pay?<b class="req">*</b></label>
             <span class="hint hint--warn">Card payment is not available directly — but you can pay by card through PayPal</span>
             <input id="jPay" type="text" maxlength="80" placeholder="e.g. PayPal, Wise, coin, cash" autocomplete="off">
             <span class="hint">Whatever is easiest for you · ex) PayPal, Wise, coin, cash</span>
+          </div>
+          <div class="field">
+            <label for="jDelivery">Getting your jacket<b class="req">*</b></label>
+            <select id="jDelivery">
+              <option value="">— select —</option>
+              <option value="pickup">Campus pick-up &mdash; &#8361;0</option>
+              <option value="delivery">Delivery to my address &mdash; +&#8361;5,000</option>
+            </select>
+            <span class="hint">Pick-up is on campus and costs nothing · delivery is charged on top of the jacket</span>
           </div>
           <div class="field">
             <label for="jQuestion">Questions for the organizer (optional)</label>
@@ -912,12 +911,11 @@ footer .mark{color:var(--on-navy)}
   /* ---------- flag notice + size highlight ---------- */
   function flagNotices(){
     var v = $("jCountry").value;
+    /* the surcharge is the first thing to know, so the note starts visible */
     $("jFlagNote").hidden = v === "NONE";
     $("jOtherField").hidden = v !== "ZZ";
   }
   $("jCountry").addEventListener("change", flagNotices);
-  function payField(){ $("jPayField").hidden = $("jBank").value !== "no"; }
-  $("jBank").addEventListener("change", payField);
   /* Deliberately stricter than RFC 5322: the organizer has to be able to actually
      mail these people. Rejects non-ASCII local parts, doubled dots and bare TLDs. */
   var EMAIL_OK = /^[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
@@ -932,15 +930,15 @@ footer .mark{color:var(--on-navy)}
   /* ---------- required fields gate ---------- */
   function formReady(){
     if (entries && entries.length >= MAX_ENTRIES) { $("joinBtn").disabled = true; return false; }
-    var country = $("jCountry").value, bank = $("jBank").value;
-    var ok = !!country && !!$("jSize").value && EMAIL_OK.test($("jEmail").value.trim()) && !!bank
-      && (bank !== "no" || !!$("jPay").value.trim())
+    var country = $("jCountry").value;
+    var ok = !!country && !!$("jSize").value && EMAIL_OK.test($("jEmail").value.trim())
+      && !!$("jPay").value.trim() && !!$("jDelivery").value
       && (country !== "ZZ" || !!$("jOther").value.trim())
       && $("jConsent").checked;
     $("joinBtn").disabled = !ok;
     return ok;
   }
-  ["jCountry","jSize","jEmail","jBank","jPay","jOther","jConsent"].forEach(function(id){
+  ["jCountry","jSize","jEmail","jPay","jDelivery","jOther","jConsent"].forEach(function(id){
     $(id).addEventListener("input", formReady);
     $(id).addEventListener("change", formReady);
   });
@@ -975,8 +973,8 @@ footer .mark{color:var(--on-navy)}
   function readForm(){
     return {
       country: $("jCountry").value, size: $("jSize").value,
-      email: $("jEmail").value.trim(), bank: $("jBank").value,
-      pay: $("jBank").value === "no" ? $("jPay").value.trim() : "",
+      email: $("jEmail").value.trim(), delivery: $("jDelivery").value,
+      pay: $("jPay").value.trim(),
       other: $("jCountry").value === "ZZ" ? $("jOther").value.trim() : "",
       consent: $("jConsent").checked,
       initials: cleanInitials(), question: $("jQuestion").value.trim()
@@ -986,8 +984,8 @@ footer .mark{color:var(--on-navy)}
     if (!f.country) { $("jCountry").focus(); return tr("Please choose your flag."); }
     if (!f.size) { $("jSize").focus(); return tr("Please choose your size."); }
     if (!EMAIL_OK.test(f.email)) { $("jEmailNote").hidden = false; $("jEmail").focus(); return tr("Please enter a valid email."); }
-    if (!f.bank) { $("jBank").focus(); return tr("Please tell us if you have a Korean bank account."); }
-    if (f.bank === "no" && !f.pay) { $("jPay").focus(); return tr("Please tell us which payment method works for you."); }
+    if (!f.pay) { $("jPay").focus(); return tr("Please tell us how you would like to pay."); }
+    if (!f.delivery) { $("jDelivery").focus(); return tr("Please choose campus pick-up or delivery."); }
     if ($("jCountry").value === "ZZ" && !f.other) { $("jOther").focus(); return tr("Please type your country."); }
     if (!f.consent) { $("jConsent").focus(); return tr("Please tick the consent box to send your entry."); }
     return "";
@@ -1028,8 +1026,8 @@ footer .mark{color:var(--on-navy)}
                         : c[2] + " (" + c[0] + ")") + "\n" +
       "Sleeve    : " + (f.initials ? f.initials : "\u2014 none \u2014") + "\n" +
       "Email     : " + f.email + "\n" +
-      "KR bank   : " + (f.bank === "yes" ? "yes" : f.bank === "friend" ? "no - a friend will send it" : "no") + "\n" +
-      (f.bank === "no" ? "Pay via   : " + f.pay + "\n" : "") +
+      "Pay via   : " + (f.pay || "\u2014") + "\n" +
+      "Delivery  : " + (f.delivery === "delivery" ? "to my address (+5,000 KRW)" : "campus pick-up (included)") + "\n" +
       "Joined    : " + (f.joined || new Date().toLocaleDateString("en-CA")) +
       (f.question ? "\nQuestion  : " + f.question : "");
   }
@@ -1068,11 +1066,10 @@ footer .mark{color:var(--on-navy)}
     $("jInitials").value = saved.initials || "";
     $("jQuestion").value = saved.question || "";
     $("jEmail").value = saved.email || "";
-    $("jBank").value = saved.bank || "";
     $("jPay").value = saved.pay || "";
+    $("jDelivery").value = saved.delivery || "";
     $("jOther").value = saved.other || "";
     $("jConsent").checked = !!saved.consent;
-    payField();
     flagNotices();
   }
   renderEntries();
@@ -1127,7 +1124,8 @@ footer .mark{color:var(--on-navy)}
       initials: f.initials, country: f.country,
       countryName: f.country === "ZZ" ? f.other : c[2], flag: c[1],
       consent: f.consent ? "동의" : "", consentTs: new Date().toISOString(),
-      size: f.size, email: f.email, krBank: f.bank, payMethod: f.pay, question: f.question,
+      size: f.size, email: f.email, krBank: "", payMethod: f.pay, delivery: f.delivery,
+      question: f.question,
       page: location.href, token: SHARED_TOKEN
     };
     // text/plain keeps it a "simple" request (no CORS preflight), which Apps Script web apps accept.
