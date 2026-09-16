@@ -286,6 +286,11 @@ h1 em{font-style:normal;color:var(--chain);display:block}
 .spot-tag .paid{color:var(--chain);font-weight:700}
 .pay-summary{font-family:var(--f-mono);font-size:12px;line-height:1.6;color:var(--on-navy-2);margin:2px 0 4px}
 .pay-summary b{color:var(--chain-bright)}
+.pay-total{border:2px solid var(--chain);padding:12px 14px;margin:2px 0 2px;display:flex;flex-direction:column;gap:5px;font-family:var(--f-mono);font-size:12.5px;color:var(--on-navy-2)}
+.pay-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.pay-row b{color:var(--on-navy);font-weight:700}
+.pay-row--sum{border-top:1px solid rgba(255,255,255,.25);padding-top:7px;margin-top:2px;font-size:14px;letter-spacing:.04em;text-transform:uppercase}
+.pay-row--sum b{color:var(--chain-bright);font-size:19px}
 .size-chart{margin:18px 0 0;border:1px solid var(--rib);background:#FFFFFF;padding:10px 10px 8px}
 .size-chart img{display:block;width:100%;height:auto}
 .size-chart figcaption{font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#7A83A0;padding-top:8px}
@@ -538,7 +543,7 @@ footer .mark{color:var(--on-navy)}
       <div class="spot">
         <span class="spot-tag"><span>02 &middot; Sleeve</span><span class="paid">+&#8361;3,000</span></span>
         <h3>Your flag</h3>
-        <p>A woven flag patch on the sleeve, &#8361;3,000 on top of the jacket. It is made only if <b>8 or more people</b> choose the same flag — below 8, those jackets get the sleeve text only, no flag, and nothing extra to pay. 37 countries to choose from.<br>If you don't have your flag, please contact us at <a href="mailto:wpalskdl03@gmail.com">wpalskdl03@gmail.com</a>.</p>
+        <p>Each patch has to be made on its own — a flag costs <b>+&#8361;3,000</b>. Leave it on <b>No flag</b> and you pay nothing extra. 39 flags to choose from.<br>If you don't have your flag, please contact us at <a href="mailto:wpalskdl03@gmail.com">wpalskdl03@gmail.com</a>.</p>
         <p class="tentative-note">The patch itself is not final — shape, size and finish can change with the factory.</p>
       </div>
     </div>
@@ -707,7 +712,13 @@ footer .mark{color:var(--on-navy)}
             <input type="checkbox" id="jConsent">
             <label for="jConsent">I agree to my information being collected and used as described above.</label>
           </div>
-          <p class="pay-summary"><b>&#8361;65,000</b> per jacket &middot; flag patch +&#8361;3,000 &middot; campus pick-up included, delivery +&#8361;5,000</p>
+          <div class="pay-total" id="jTotalBox">
+            <div class="pay-row"><span>Jacket</span><b>&#8361;65,000</b></div>
+            <div class="pay-row" id="jRowFlag" hidden><span>Flag patch</span><b>+&#8361;3,000</b></div>
+            <div class="pay-row"><span id="jShipLabel">Campus pick-up</span><b id="jShipCost">&#8361;0</b></div>
+            <div class="pay-row pay-row--sum"><span>Total</span><b id="jTotalValue">&#8361;65,000</b></div>
+          </div>
+          <p class="pay-summary">Press <b>Add me to the order</b> and we email you the bank account details for this exact amount. Paying cash? Hand it to us in front of the <b>International Building</b>, Wednesday to Friday at lunch time.</p>
           <button class="btn btn--gold" type="submit" id="joinBtn" disabled>Add me to the order<span class="cta-hand" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></span></button>
           <p class="hint" id="reqHint"><b class="req">*</b> Required — the button turns on once these are filled in.</p>
           <p class="lock-note" id="lockNote" hidden>Email the organizer at wpalskdl03@gmail.com and we'll change it. Once the jackets go into production, sizes are locked and orders can't be cancelled.</p>
@@ -771,7 +782,7 @@ footer .mark{color:var(--on-navy)}
   <div class="modal" id="sentModal" hidden>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="sentTitle">
       <h3 id="sentTitle">You're in</h3>
-      <p class="modal-lead">We'll email you the payment details as soon as the order closes.</p>
+      <p class="modal-lead">Check your inbox — we just emailed you the bank account details and what you owe. Cash works too: in front of the International Building, Wednesday to Friday at lunch time.</p>
       <p class="modal-email" id="sentEmail"></p>
       <p class="modal-first">You are on the order list — we write to you first.</p>
       <button class="btn btn--gold" type="button" id="sentClose">Close</button>
@@ -882,6 +893,7 @@ footer .mark{color:var(--on-navy)}
     ["SE","🇸🇪","Sweden"],["PL","🇵🇱","Poland"],
     ["CA","🇨🇦","Canada"],["MX","🇲🇽","Mexico"],
     ["BR","🇧🇷","Brazil"],["EG","🇪🇬","Egypt"],
+    ["MA","🇲🇦","Morocco"],
     ["AU","🇦🇺","Australia"],["ZZ","🏳️","Other — tell us"]
   ];
 
@@ -914,8 +926,25 @@ footer .mark{color:var(--on-navy)}
     /* the surcharge is the first thing to know, so the note starts visible */
     $("jFlagNote").hidden = v === "NONE";
     $("jOtherField").hidden = v !== "ZZ";
+    updateTotal();
   }
   $("jCountry").addEventListener("change", flagNotices);
+
+  /* ---------- running total: the price of what is selected right now ---------- */
+  var BASE_PRICE = 65000, FLAG_FEE = 3000, SHIP_FEE = 5000;
+  function won(n){ return "\u20A9" + n.toLocaleString("en-US"); }
+  function updateTotal(){
+    var c = $("jCountry").value;
+    /* "no flag" and "nothing picked yet" both cost nothing extra */
+    var flagOn = !!c && c !== "NONE";
+    var ship = $("jDelivery").value === "delivery";
+    $("jRowFlag").hidden = !flagOn;
+    $("jShipLabel").textContent = ship ? tr("Delivery to my address") : tr("Campus pick-up");
+    $("jShipCost").textContent = ship ? "+" + won(SHIP_FEE) : won(0);
+    $("jTotalValue").textContent = won(BASE_PRICE + (flagOn ? FLAG_FEE : 0) + (ship ? SHIP_FEE : 0));
+  }
+  $("jDelivery").addEventListener("change", updateTotal);
+  updateTotal();
   /* Deliberately stricter than RFC 5322: the organizer has to be able to actually
      mail these people. Rejects non-ASCII local parts, doubled dots and bare TLDs. */
   var EMAIL_OK = /^[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
@@ -1072,6 +1101,7 @@ footer .mark{color:var(--on-navy)}
     $("jConsent").checked = !!saved.consent;
     flagNotices();
   }
+  updateTotal();
   renderEntries();
   formReady();
 

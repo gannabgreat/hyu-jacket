@@ -27,8 +27,29 @@ var FLOOD_MAX    = 20;         // everyone together: max writes per minute
 var MAX_LEN      = 300;        // per field, question gets 4x
 
 var HEADERS = ['접수시각', 'id', '이니셜', '국기코드', '국가', '사이즈',
-               '이메일', '결제수단', '배송', '질문', '개인정보동의', '동의시각',
+               '이메일', '결제수단', '배송', '합계', '질문', '개인정보동의', '동의시각',
                '유입페이지', '수정횟수'];
+
+// What an order costs. The page shows the same numbers; keep them in step.
+var BASE_PRICE = 65000;
+var FLAG_FEE   = 3000;   // only when a flag is actually chosen
+var SHIP_FEE   = 5000;   // only when they want it delivered
+
+// Where the money goes. Sent to each applicant in the receipt mail, not on the page.
+var BANK_NAME   = 'KB Kookmin Bank';
+var BANK_CODE   = '004';
+var BANK_ACCOUNT = '94160201367661';
+var BANK_HOLDER = '안현서 (Ahn Hyunseo)';
+
+function orderTotal(countryCode, delivery) {
+  var flag = countryCode && countryCode !== 'NONE' ? FLAG_FEE : 0;
+  var ship = delivery === 'delivery' ? SHIP_FEE : 0;
+  return { flag: flag, ship: ship, total: BASE_PRICE + flag + ship };
+}
+
+function won(n) {
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' KRW';
+}
 
 // The hoody is a separate interest list: email only, its own tab.
 var HOODY_SHEET  = 'hoody';
@@ -70,10 +91,11 @@ function doPost(e) {
       cache.put('rl_' + id, '1', Math.ceil(PER_ID_MS / 1000));
 
       var sheet = getSheet();
+      var cost = orderTotal(clean(body.country), clean(body.delivery));
       var row = [
         new Date(), id,
         clean(body.initials), clean(body.flag), clean(body.countryName), clean(body.size),
-        clean(body.email), clean(body.payMethod), clean(body.delivery),
+        clean(body.email), clean(body.payMethod), clean(body.delivery), cost.total,
         clean(body.question, MAX_LEN * 4), clean(body.consent), clean(body.consentTs),
         clean(body.page), 0
       ];
@@ -88,7 +110,7 @@ function doPost(e) {
         updated = true;
       } else {
         sheet.appendRow(row);
-        confirmToApplicant(row);
+        confirmToApplicant(row, cost);
       }
 
       return json({ ok: true, updated: updated });
@@ -158,9 +180,10 @@ function findRow(sheet, id) {
 // sheet, and one mail per entry keeps the 100/day consumer quota at 100 entries.
 // Receipt for the person who filled the form. English only on purpose: one
 // message goes out to two dozen first languages and English is the shared one.
-function confirmToApplicant(row) {
+function confirmToApplicant(row, cost) {
   var to = String(row[6] || '');
   if (!to) return;
+  var delivered = row[8] === 'delivery';
   var body = [
     'Hi,',
     '',
@@ -173,15 +196,31 @@ function confirmToApplicant(row) {
     '  Flag        : ' + (row[4] || '-'),
     '  Sleeve text : ' + (row[2] || '(none)'),
     '  Pay via     : ' + (row[7] || '-'),
-    '  Delivery    : ' + (row[8] === 'delivery' ? 'to your address (+5,000 KRW)' : 'campus pick-up (included)'),
+    '  Delivery    : ' + (delivered ? 'to your address' : 'campus pick-up'),
     '',
-    'What it costs',
-    '  Jacket      : 65,000 KRW',
-    '  Flag patch  : +3,000 KRW, and only produced when 8 or more people pick that flag',
-    '  Pick-up     : on campus, included',
-    '  Delivery    : +5,000 KRW if you want it sent to your address instead',
+    'What you pay',
+    '  Jacket      : ' + won(BASE_PRICE),
+    '  Flag patch  : ' + (cost.flag ? '+' + won(cost.flag) : 'none'),
+    '  Delivery    : ' + (cost.ship ? '+' + won(cost.ship) : 'campus pick-up, included'),
+    '  ---------------------------------',
+    '  TOTAL       : ' + won(cost.total),
     '',
-    'We will email you the payment details at this address as soon as the order closes.',
+    'How to pay',
+    '  Bank        : ' + BANK_NAME + ' (bank code ' + BANK_CODE + ')',
+    '  Account     : ' + BANK_ACCOUNT,
+    '  Account name: ' + BANK_HOLDER,
+    '  Amount      : ' + won(cost.total),
+    '',
+    'Please send it under your own name, or reply to this mail with the name you',
+    'transferred under, so we can match your payment to your order.',
+    '',
+    'Prefer cash? Bring it to us in person in front of the International Building',
+    '(국제관), Wednesday to Friday during lunch time.',
+    '',
+    'A flag patch is only produced when 8 or more people pick the same flag. If your',
+    'flag does not reach 8, we will write to you before anything is charged.',
+    '',
+    'Any question, just reply to this mail.',
     '',
     'Hanyang Varsity Jacket group order',
     'wpalskdl03@gmail.com'
@@ -189,7 +228,7 @@ function confirmToApplicant(row) {
   try {
     MailApp.sendEmail({
       to: to,
-      subject: 'Hanyang varsity jacket - your order is in',
+      subject: 'Hanyang varsity jacket - your order and how to pay',
       body: body,
       name: 'Hanyang Varsity Jacket'
     });
