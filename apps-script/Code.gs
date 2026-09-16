@@ -226,6 +226,8 @@ function confirmToApplicant(row, cost) {
     '',
     'Any question, just reply to this mail.',
     '',
+    'Our page (the only one that is up to date): https://hyu-jacket.pages.dev',
+    '',
     'Hanyang Varsity Jacket group order',
     'wpalskdl03@gmail.com'
   ].join('\n');
