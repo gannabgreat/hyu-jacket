@@ -434,6 +434,13 @@ footer .mark{color:var(--on-navy)}
 .notice-cta{font-family:var(--f-mono);font-size:clamp(.85rem,1.2vw,1.05rem);font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   white-space:nowrap;background:var(--navy-deep);color:#fff;padding:.55rem 1.1rem;border-radius:999px}
 .notice-break{flex-basis:100%;height:0}
+.closed-card{display:block}
+.closed-card h3{font-family:var(--f-display);font-size:clamp(1.1rem,2vw,1.5rem);margin:0 0 14px;color:var(--navy-deep)}
+.closed-card p{margin:0 0 12px;line-height:1.65}
+.closed-card .closed-next{font-weight:600}
+.closed-card .closed-zh{font-size:.9em;opacity:.85}
+/* 2026-09-18 17:00 마감. 폼은 스크립트가 참조하므로 지우지 않고 감춘다. */
+#joinForm{display:none!important}
 .notice-deadline{font-family:var(--f-mono);font-size:clamp(.72rem,1vw,.88rem);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-deep);background:rgba(255,255,255,.55);border-radius:999px;padding:3px 10px}
 .notice-first{flex-basis:100%;text-align:center;font-family:var(--f-mono);font-size:clamp(.8rem,1.15vw,1rem);font-weight:700;letter-spacing:.04em;line-height:1.5;color:var(--navy-deep);opacity:.9}
 @keyframes noticePulse{0%,100%{opacity:1}50%{opacity:.45}}
@@ -485,12 +492,12 @@ footer .mark{color:var(--on-navy)}
   </div>
 </header>
 <a class="notice-bar" href="#join">
-  <span class="notice-pill">Now open</span>
+  <span class="notice-pill">Closed</span>
   <span class="notice-break" aria-hidden="true"></span>
-  <span class="notice-text">The order is open &mdash; &#8361;65,000 per jacket.</span>
-  <span class="notice-deadline">Last orders: Friday 18 September, 17:00</span>
-  <span class="notice-cta">Join &rarr;</span>
-  <span class="notice-first">Join the order and we'll email you the payment details</span>
+  <span class="notice-text">Orders closed on 18 September &mdash; the list is with the factory.</span>
+  <span class="notice-deadline">Pick-up: 22&ndash;30 October</span>
+  <span class="notice-cta">Details &rarr;</span>
+  <span class="notice-first">A second round may open &mdash; write to us to be first in line</span>
 </a>
 <div class="rib-rule"></div>
 
@@ -663,11 +670,19 @@ footer .mark{color:var(--on-navy)}
   <!-- join -->
   <section class="band join" id="join">
     <div class="wrap">
-      <span class="eyebrow">Join</span>
-      <p class="interest-check">Join the order</p>
-      <h2 class="sec-title">Add yourself<br>to the order</h2>
+      <span class="eyebrow">Closed</span>
+      <p class="interest-check">Orders are closed</p>
+      <h2 class="sec-title">The list is<br>with the factory</h2>
 
       <div class="join-grid">
+        <div class="form-card closed-card">
+          <h3>Orders closed &mdash; 18 September, 17:00</h3>
+          <p>The group order is finished. The list went to the factory on 18 September and production has started, so no one can be added to this round.</p>
+          <p>Jackets are picked up on campus between <b>22 and 30 October 2026</b>. Everyone who paid gets an email with the exact place and time.</p>
+          <p class="closed-next">Want one anyway? Write to <a href="mailto:wpalskdl03@gmail.com">wpalskdl03@gmail.com</a>. If enough people ask, we will open a second round and email you first.</p>
+          <p class="closed-zh">本次团购已截止（9月18日17:00）。名单已送到工厂，无法再加人。10月22日至30日校内领取。想要的话请写信到 wpalskdl03@gmail.com，人够多我们会开第二次团购，并优先通知你。</p>
+          <p class="closed-zh">受付は終了しました（9月18日17:00）。工場に発注済みのため、追加はできません。お渡しは10月22日〜30日、学内です。第二次を希望される方は wpalskdl03@gmail.com までご連絡ください。</p>
+        </div>
         <form class="form-card" id="joinForm" novalidate>
           <!-- honeypot: humans never see it, bots fill everything. A filled value means "drop it". -->
           <div class="hp" aria-hidden="true"><label>Website<input id="jWebsite" type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
@@ -798,13 +813,13 @@ footer .mark{color:var(--on-navy)}
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="lastOrderTitle">
       <button class="promo-close" type="button" id="lastOrderClose" aria-label="Close">&times;</button>
       <div class="lastorder-head">
-        <h3 id="lastOrderTitle">Last orders</h3>
-        <p class="lastorder-when">Friday 18 Sept, 17:00</p>
+        <h3 id="lastOrderTitle">Orders closed</h3>
+        <p class="lastorder-when">18 Sept, 17:00 &mdash; pick-up 22&ndash;30 Oct</p>
       </div>
       <div class="promo-body">
-        <p>The group order closes on Friday 18 September at 17:00. After that the list goes to the factory and nobody can be added.</p>
+        <p>The group order closed on 18 September at 17:00. The list is with the factory and nobody can be added to this round. If a second round opens, we will email the people who asked for one first.</p>
         <div class="promo-actions">
-          <button class="btn btn--gold" type="button" id="lastOrderGo">Join the order</button>
+          <button class="btn btn--gold" type="button" id="lastOrderGo">See the details</button>
           <label class="promo-mute"><input type="checkbox" id="lastOrderMute"> Don't show this again today</label>
         </div>
       </div>
@@ -1204,6 +1219,9 @@ footer .mark{color:var(--on-navy)}
   document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !sentModal.hidden) closeSent(); });
 
   var status = $("joinStatus");
+  /* 2026-09-18 17:00 부로 마감. 폼은 감춰져 있지만 오래 열어둔 탭이나 스크립트가
+     제출을 시도할 수 있어 여기서도 막는다. 2차를 열면 이 값을 false 로. */
+  var ORDERS_CLOSED = true;
   var idv = localId();
 
   function sendToSheet(f){
@@ -1245,6 +1263,10 @@ footer .mark{color:var(--on-navy)}
 
   $("joinForm").addEventListener("submit", function(e){
     e.preventDefault();
+    if (ORDERS_CLOSED) {
+      status.textContent = tr("Orders are closed. Write to wpalskdl03@gmail.com to be first in line if a second round opens.");
+      return;
+    }
     var f = readForm(), err = validate(f);
     if (err) { status.textContent = err; return; }
     if (entries.length >= MAX_ENTRIES) {
