@@ -325,11 +325,62 @@ function receiptZh(row, cost, delivered, trad) {
   return lines.join('\n');
 }
 
+/* 2026-09-18 17:00 부로 1차 주문 마감. 공장에 명단이 넘어간 뒤로는 새 신청을
+   받아도 이번 차수에 넣을 수 없어서, 접수 확인 대신 마감 안내를 보낸다.
+   시트에는 그대로 기록된다 — 2차를 열 때 이 사람들에게 먼저 연락하려는 것이다.
+   2차를 열면 이 값을 false 로 되돌리면 원래 접수 메일이 다시 나간다. */
+var ORDERS_CLOSED = true;
+
+function closedBody_(zh) {
+  if (zh) {
+    return [
+      '你好，',
+      '',
+      '感谢你的申请。很抱歉——这次团购已经截止了。名单已经在 2026年9月18日 送到工厂，制作已经开始，所以没办法再把你的外套加进这一批。',
+      '',
+      '你不需要支付任何费用，我们也不会向你收款。',
+      '',
+      '如果之后开第二次团购，我们会第一时间给你发邮件，让你比其他人先报名。你的申请我们已经留着了。',
+      '',
+      '我们的网站：https://hyu-jacket.pages.dev',
+      '',
+      '- 汉阳大学棒球外套团购'
+    ].join('\n');
+  }
+  return [
+    'Hi,',
+    '',
+    'Thank you for signing up. I am sorry to say the group order has already closed - the list went to the factory on 18 September 2026 and production has started, so your jacket cannot be added to this round.',
+    '',
+    'Nothing is owed and nothing will be charged.',
+    '',
+    'If we run a second round, we will email you first so you can join before anyone else. Your entry is kept on the list.',
+    '',
+    'Our website: https://hyu-jacket.pages.dev',
+    '',
+    '- Hanyang varsity jacket group order'
+  ].join('\n');
+}
+
 function confirmToApplicant(row, cost, lang) {
   var to = String(row[6] || '');
   if (!to) return;
-  var delivered = row[8] === 'delivery';
   var code = String(lang || '').toLowerCase();
+  if (ORDERS_CLOSED) {
+    var zh = code.indexOf('zh') === 0;
+    try {
+      MailApp.sendEmail({
+        to: to,
+        subject: zh ? '汉阳大学棒球外套团购 - 本次团购已截止' : 'Hanyang varsity jacket - orders are now closed',
+        body: closedBody_(zh),
+        name: 'Hanyang Varsity Jacket'
+      });
+    } catch (err) {
+      // Mail quota is not a reason to lose the row.
+    }
+    return;
+  }
+  var delivered = row[8] === 'delivery';
   var subject, body;
   if (code === 'zh-tw' || code === 'zh-hant') {
     subject = '漢陽大學棒球外套團購 - 訂單已登記，這是你的金額';
