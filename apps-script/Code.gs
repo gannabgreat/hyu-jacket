@@ -21,7 +21,10 @@ var TOKEN = 'hyu-jacket-2026';
 var SHEET_ID     = '1Pv1dVRG_HAVH3epj4tRk_AdW1c7rGU5Oz1oo5OiIH-4';
 // New sheet from 2026-09-16: the old 'orders' tab keeps the entries taken
 // while this was an interest check, on the old columns. Nothing writes there now.
-var SHEET_NAME   = 'orders2';
+// Round 2 from 2026-11-05 writes to its own tab: 'orders2' holds round 1 (plus the
+// people who signed up after it closed), and findRow() matches on the browser id,
+// so sharing the tab would let a round-1 buyer's browser overwrite their old row.
+var SHEET_NAME   = 'round2';
 var PER_ID_MS    = 20 * 1000;  // same browser: one write per 20s
 var FLOOD_MAX    = 20;         // everyone together: max writes per minute
 var MAX_LEN      = 300;        // per field, question gets 4x
@@ -31,6 +34,12 @@ var HEADERS = ['접수시각', 'id', '이니셜', '국기코드', '국가', '사
                '유입페이지', '수정횟수'];
 
 // What an order costs. The page shows the same numbers; keep them in step.
+// Round 2 has no fixed jacket price yet: it lands between these two depending on
+// how many people join, and is emailed once the order goes ahead.
+var BASE_MIN = 60000;
+var BASE_MAX = 70000;
+// Round 1 price. Only the round-1 receipt mails below (receiptEn/receiptZh) use it;
+// set it to the final round-2 price before sending receipts for round 2.
 var BASE_PRICE = 65000;
 var FLAG_FEE   = 5000;   // only when a flag is actually chosen
 var SHIP_FEE   = 3000;   // only when they want it delivered
@@ -48,7 +57,13 @@ function orderTotal(countryCode, delivery, size) {
   var flag = countryCode && countryCode !== 'NONE' ? FLAG_FEE : 0;
   var ship = delivery === 'delivery' ? SHIP_FEE : 0;
   var big  = SIZE_FEES[String(size || '').toUpperCase()] || 0;
-  return { flag: flag, ship: ship, size: big, total: BASE_PRICE + flag + ship + big };
+  var extras = flag + ship + big;
+  return { flag: flag, ship: ship, size: big, total: BASE_PRICE + extras,
+           min: BASE_MIN + extras, max: BASE_MAX + extras };
+}
+
+function wonRange(cost) {
+  return won(cost.min).replace(' KRW', '') + ' - ' + won(cost.max);
 }
 
 function won(n) {
@@ -99,7 +114,8 @@ function doPost(e) {
       var row = [
         new Date(), id,
         clean(body.initials), clean(body.flag), clean(body.countryName), clean(body.size),
-        clean(body.email), clean(body.payMethod), clean(body.delivery), cost.total,
+        clean(body.email), clean(body.payMethod), clean(body.delivery),
+        WAITING_FOR_EIGHT ? wonRange(cost) : cost.total,
         clean(body.question, MAX_LEN * 4), clean(body.consent), clean(body.consentTs),
         clean(body.page), 0
       ];
@@ -329,7 +345,73 @@ function receiptZh(row, cost, delivered, trad) {
    받아도 이번 차수에 넣을 수 없어서, 접수 확인 대신 마감 안내를 보낸다.
    시트에는 그대로 기록된다 — 2차를 열 때 이 사람들에게 먼저 연락하려는 것이다.
    2차를 열면 이 값을 false 로 되돌리면 원래 접수 메일이 다시 나간다. */
-var ORDERS_CLOSED = true;
+var ORDERS_CLOSED = false;
+
+/* Round 2 (2026-11-05): the order only goes ahead once 8 people have signed up,
+   and nobody pays before that. Sign-ups get a "you're on the list" mail with the
+   price range instead of the receipt with bank details. When 8 are in and the
+   final price is set, turn this off (and set BASE_PRICE) to go back to receipts. */
+var WAITING_FOR_EIGHT = true;
+
+function waitingBody_(row, cost, delivered, zh) {
+  var size  = cost.size ? row[5] + ' (+' + won(cost.size) + ')' : (row[5] || '-');
+  if (zh) {
+    return [
+      '你好' + (row[2] ? ' ' + row[2] : '') + '，',
+      '',
+      '感谢报名汉阳大学棒球外套第二次团购，你的申请已经登记。',
+      '',
+      '这次团购满 8 人才会开团。现在不需要付款。',
+      '人数满 8 人后，我们会把最终价格和汇款账户发邮件给你。满 8 人之后也会继续接受报名。',
+      '',
+      '你的选择',
+      '  尺码     : ' + size,
+      '  国旗     : ' + (row[4] || '不要国旗') + (cost.flag ? ' (+' + won(cost.flag) + ')' : ''),
+      '  袖子文字 : ' + (row[2] || '(无)'),
+      '  领取方式 : ' + (delivered ? '寄到你的地址 (+' + won(cost.ship) + ')' : '校内领取（免费）'),
+      '',
+      '  外套价格 : 60,000 - 70,000 KRW（按最终人数决定）',
+      '  预计合计 : ' + wonRange(cost),
+      '',
+      '开团后从下单到领取大约 4-5 周。',
+      '',
+      '人越快凑齐，越早拿到外套。欢迎把网站分享给想要的朋友：',
+      'https://hyu-jacket.pages.dev',
+      '',
+      '有任何问题直接回复这封邮件。',
+      '',
+      '- 汉阳大学棒球外套团购',
+      'wpalskdl03@gmail.com'
+    ].join('\n');
+  }
+  return [
+    'Hi' + (row[2] ? ' ' + row[2] : '') + ',',
+    '',
+    'Thanks for joining round 2 of the Hanyang varsity jacket group order - you are on the list.',
+    '',
+    'This round goes ahead once 8 people have signed up. There is nothing to pay now.',
+    'When 8 people have joined, we email you the final price and the bank details. We keep taking sign-ups after that too.',
+    '',
+    'What you signed up for',
+    '  Size        : ' + size,
+    '  Flag        : ' + (row[4] || 'no flag') + (cost.flag ? ' (+' + won(cost.flag) + ')' : ''),
+    '  Sleeve text : ' + (row[2] || '(none)'),
+    '  Getting it  : ' + (delivered ? 'delivery to your address (+' + won(cost.ship) + ')' : 'campus pick-up, free'),
+    '',
+    '  Jacket      : 60,000 - 70,000 KRW (final price depends on how many join)',
+    '  Your total  : ' + wonRange(cost),
+    '',
+    'Once the order goes ahead, it takes about 4-5 weeks to pick-up.',
+    '',
+    'The sooner we reach 8, the sooner you wear it - share the page with friends who want one:',
+    'https://hyu-jacket.pages.dev',
+    '',
+    'Any question, just reply to this mail.',
+    '',
+    'Hanyang Varsity Jacket group order',
+    'wpalskdl03@gmail.com'
+  ].join('\n');
+}
 
 function closedBody_(zh) {
   if (zh) {
@@ -382,6 +464,21 @@ function confirmToApplicant(row, cost, lang) {
   }
   var delivered = row[8] === 'delivery';
   var subject, body;
+  if (WAITING_FOR_EIGHT) {
+    var wzh = code.indexOf('zh') === 0;
+    try {
+      MailApp.sendEmail({
+        to: to,
+        subject: wzh ? '汉阳大学棒球外套第二次团购 - 已登记，满 8 人开团'
+                     : 'Hanyang varsity jacket round 2 - you are on the list',
+        body: waitingBody_(row, cost, delivered, wzh),
+        name: 'Hanyang Varsity Jacket'
+      });
+    } catch (err) {
+      // Mail quota is not a reason to lose the row.
+    }
+    return;
+  }
   if (code === 'zh-tw' || code === 'zh-hant') {
     subject = '漢陽大學棒球外套團購 - 訂單已登記，這是你的金額';
     body = receiptZh(row, cost, delivered, true);
